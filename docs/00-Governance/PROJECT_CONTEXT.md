@@ -1,253 +1,242 @@
 # Project Context
 
-| Item          | Value             |
-| ------------- | ----------------- |
-| Document ID   | GOV-002           |
-| Version       | 1.0               |
-| Status        | Draft             |
-| Project       | Fitness Platform  |
-| Document Type | Governance        |
-| Owner         | Architecture Team |
-| Language      | English           |
-| Last Updated  | 2026-07-16        |
+| Property | Value |
+|----------|-------|
+| Document ID | GOV-002 |
+| Title | Project Context |
+| Version | 1.0 |
+| Status | Draft |
+| Owner | Architecture Team |
+| Classification | Governance |
+| Repository | Fitness Platform Documentation |
+| Source of Truth | Yes |
+| Review Cycle | On Major Business Change |
+| Language | English |
+| Last Updated | 2026-07-16 |
 
 ---
 
-# Executive Summary
+# 1. Purpose
 
-Fitness Platform is an AI-first, content-driven digital health and fitness ecosystem designed to help users improve their physical well-being through structured educational content, personalized training programs, nutrition guidance, and professional coaching.
+## 1.1 Objective
 
-The platform is designed around long-term scalability while maintaining a simple architecture suitable for an MVP.
+This document defines the stable business context of the Fitness Platform project.
 
-Documentation is considered the primary source of truth for the entire product lifecycle.
+It establishes a common understanding of the project's identity, business scope, stakeholders, user groups, business domains, and governing principles.
 
-Every implementation must originate from approved documentation.
+The primary objective of this document is to capture knowledge that is expected to remain stable throughout the lifetime of the project.
 
----
+This document intentionally focuses on **business knowledge rather than implementation details**.
 
-# Product Vision
+Technology choices, architectural decisions, infrastructure, APIs, databases, and implementation strategies are documented separately.
 
-Create a unified fitness ecosystem where users can learn, train, improve, and communicate with professionals through a single platform.
-
-The platform should support beginners, advanced athletes, personal trainers, nutritionists, and future smart fitness devices without requiring major architectural redesign.
+This document serves as the highest-level business reference for all downstream documentation.
 
 ---
 
-# Mission
+## 1.2 Guiding Principle
 
-Our mission is to make professional fitness education and coaching accessible through a scalable digital platform powered by structured content, personalized programs, and AI-assisted development.
+The Fitness Platform is designed around **stable business knowledge**.
 
----
+Documentation contained in this document changes only when the business itself changes.
 
-# Project Scope
-
-Version 1 focuses on delivering the essential building blocks of the platform.
-
-Included in scope:
-
-* User authentication
-* User profile
-* Video streaming
-* Courses
-* Learning collections
-* Trackable content
-* Learning progress
-* Weight tracking
-* BMI tracking
-* Goal management
-* Subscription management
-* Admin Panel
-* Professional Portal
-* Android TV support
-
-Out of scope for Version 1:
-
-* AI Coach
-* Smart Wearables
-* Smart Gym Devices
-* Social Network
-* Marketplace
-* Live Streaming
-* Community Challenges
-
-These capabilities are intentionally postponed to future releases.
+Implementation details, technologies, architectural patterns, and operational decisions belong to dedicated documentation and must never be introduced into this document.
 
 ---
 
-# Product Ecosystem
+## 1.3 Scope
 
-The platform consists of multiple integrated modules.
+### In Scope
 
-Core modules include:
+This document defines:
 
-* Identity
-* User Profile
-* Content
-* Learning
-* Progress
-* Nutrition
-* Professional Services
-* Subscription
-* Administration
-* Analytics
-* Notifications
+- Project identity
+- Business context
+- Business scope
+- Stakeholders
+- User groups
+- Core business domains
+- Governing business principles
+- Business constraints
+- Long-term project direction
 
-Each module owns its own business rules while remaining part of a modular monolith architecture.
+### Out of Scope
 
----
+This document does not define:
 
-# Target Users
+- Software architecture
+- Technology stack
+- Database design
+- API specifications
+- User interface design
+- Infrastructure
+- Deployment
+- Security implementation
+- Development workflow
 
-The platform serves several user groups.
-
-### End User
-
-Users consuming educational content, following workout plans, tracking progress, and improving their health.
-
-### Professional
-
-Certified trainers and nutritionists responsible for creating personalized workout or nutrition programs and communicating with assigned users.
-
-Professionals do not freely browse users.
-Users submit a request and the platform assigns or connects the request to the appropriate professional according to business rules.
-
-### Administrator
-
-Responsible for platform configuration, user management, content moderation, subscription management, reporting, and operational monitoring.
+These subjects are documented independently within the repository.
 
 ---
 
-# Core Business Domains
+# 2. Project Overview
 
-The platform is organized around the following business domains.
+## 2.1 Project Name
 
-| Domain                | Responsibility                                         |
-| --------------------- | ------------------------------------------------------ |
-| Identity              | Authentication and account management                  |
-| User Profile          | Personal information and goals                         |
-| Content               | Videos, courses, playlists, collections                |
-| Learning              | Enrollment and content consumption                     |
-| Progress              | Learning progress and fitness tracking                 |
-| Nutrition             | Food database, calorie tracking and nutrition programs |
-| Professional Services | Trainers, nutritionists and communication              |
-| Subscription          | Access control and premium plans                       |
-| Administration        | Platform management                                    |
-| Analytics             | Reporting and insights                                 |
-| Notification          | User communication                                     |
+**Fitness Platform**
 
 ---
 
-# High-Level Features
+## 2.2 Project Statement
 
-The platform supports:
+The Fitness Platform is a domain-driven digital health platform that enables structured health improvement through educational content, personalized programs, professional guidance, and measurable progress.
 
-* Single educational videos
-* Multi-video courses
-* Structured learning paths
-* Content collections
-* Premium subscriptions
-* Free content
-* Personalized workout programs
-* Personalized nutrition programs
-* Video progress tracking
-* Course progress tracking
-* Collection progress tracking
-* Completion history
-* Weight history
-* BMI history
-* Goal tracking
-* Water tracking
-* Calorie tracking
-* Food database
-* Professional chat
-* Android TV playback
-* Future smart device integration
+The platform integrates learning, coaching, health tracking, and professional services into a unified ecosystem designed to support users throughout their long-term health journey.
+
+Rather than functioning as a standalone video application or workout tracker, the platform provides an integrated environment where education, guidance, and measurable outcomes work together.
 
 ---
 
-# Core Business Rules
+## 2.3 Business Context
 
-The following business rules apply across the entire platform.
+Today's digital fitness ecosystem is highly fragmented.
 
-1. Documentation is always the source of truth.
-2. Every content item has a lifecycle.
-3. Every trackable content stores user progress.
-4. Course progress is calculated from completed lessons.
-5. Collection progress is calculated from its child contents.
-6. Users may enroll in multiple courses simultaneously.
-7. Progress is isolated per enrollment.
-8. Workout programs are assigned by professionals.
-9. Nutrition programs are assigned by professionals.
-10. Subscription determines accessible content.
-11. The first lesson of eligible courses may be free.
-12. Free users have limited platform capabilities.
-13. Premium users receive access according to subscription plans.
-14. Administrative users can audit every critical operation.
-15. Every important business event should be traceable.
+Users typically rely on disconnected resources such as social media, online videos, mobile applications, personal trainers, and nutrition professionals.
+
+These disconnected experiences often result in:
+
+- Inconsistent educational quality
+- Lack of structured learning
+- Limited personalization
+- Poor long-term engagement
+- Fragmented progress tracking
+- Difficult access to qualified professionals
+
+The Fitness Platform addresses these challenges by providing a unified ecosystem where education, personalized programs, professional guidance, and measurable progress are delivered through a consistent user experience.
 
 ---
 
-# Architecture Overview
+## 2.4 Project Goals
 
-The system follows an AI-first software engineering approach.
+### Business Goals
 
-Architecture principles include:
+- Deliver measurable value through digital health services.
+- Build long-term user engagement.
+- Enable sustainable subscription-based growth.
+- Support collaboration between users and professionals.
 
-* Domain-Driven Design (DDD)
-* Modular Monolith
-* Clean Architecture
-* API-First
-* Mobile-First
-* Content-First
-* Documentation-Driven Development
+### Product Goals
 
-Business domains are isolated while remaining deployable as a single application during the MVP stage.
+- Provide structured learning experiences.
+- Enable personalized health improvement.
+- Simplify communication with professionals.
+- Deliver measurable user progress.
+- Create a scalable product foundation for future capabilities.
 
-This minimizes operational complexity while preserving future scalability.
+### Technical Goals
 
----
-
-# Technology Direction
-
-The current technology direction is:
-
-| Layer           | Direction                           |
-| --------------- | ----------------------------------- |
-| Mobile          | Flutter                             |
-| Backend         | To Be Decided (Architecture Driven) |
-| Database        | PostgreSQL                          |
-| Object Storage  | S3-Compatible Storage               |
-| Admin Panel     | Web Application                     |
-| Architecture    | Modular Monolith                    |
-| Documentation   | Markdown + Mermaid                  |
-| Version Control | Git + GitHub                        |
+- Maintain clear separation between business and technology.
+- Preserve modular architecture.
+- Support long-term maintainability.
+- Enable continuous evolution without major redesign.
 
 ---
 
-# Development Principles
+# 3. Business Scope
 
-The project follows these principles:
+The Fitness Platform focuses on delivering digital health and fitness services through structured educational experiences, personalized programs, measurable progress tracking, and professional support.
 
-* Simplicity before complexity.
-* Documentation before implementation.
-* Business before technology.
-* Architecture before code.
-* AI assists development but never replaces architectural decisions.
-* Every module must remain independently understandable.
-* Every design decision should be documented through ADRs whenever appropriate.
+The initial business scope includes:
+
+- Educational content
+- Learning experiences
+- Fitness programs
+- Nutrition programs
+- Progress tracking
+- Goal management
+- Professional services
+- Subscription management
+- Administrative management
+
+Capabilities outside the current business mission, including social networking, e-commerce marketplaces, or unrelated lifestyle services, are intentionally excluded unless justified by future business requirements.
 
 ---
 
-# Project Constraints
+# 4. Stakeholders
 
-The project intentionally prioritizes maintainability over premature optimization.
+The project involves multiple stakeholders, each with clearly defined responsibilities.
 
-Constraints include:
+| Stakeholder | Primary Responsibility |
+|-------------|------------------------|
+| Product Owner | Defines business vision, priorities, and product direction. |
+| Business Team | Defines business rules and operational processes. |
+| Architecture Team | Defines software architecture and technical governance. |
+| Development Team | Implements approved specifications. |
+| Content Team | Produces and maintains educational content. |
+| Professional Team | Provides coaching and professional health services. |
+| Customer Support | Assists users and resolves operational issues. |
+| Platform Administrators | Operate and manage the platform. |
+| Platform Users | Consume platform services and provide business feedback. |
 
-* Keep the MVP simple.
-* Avoid unnecessary abstractions.
-* Avoid microservices unless justified.
-* Prefer proven technologies.
-* Keep business logic inside the domain.
-* Preserve backward compatibility whenever possible.
-* Optimize for long-term maintainability instead of short-term speed.
+Documentation is considered the authoritative source of project knowledge for every stakeholder.
+
+---
+
+# 5. User Groups
+
+The platform supports multiple categories of users.
+
+---
+
+## 5.1 Platform User
+
+Platform Users are individuals seeking structured improvement of their health and fitness.
+
+Typical activities include:
+
+- Exploring educational content
+- Enrolling in learning programs
+- Completing learning collections
+- Following fitness programs
+- Following nutrition programs
+- Tracking personal progress
+- Managing personal goals
+- Receiving professional guidance
+
+---
+
+## 5.2 Professional User
+
+Professional Users provide specialized health services within the platform.
+
+Current professional roles include:
+
+- Fitness Trainer
+- Nutritionist
+
+Future professional roles may include:
+
+- Physiotherapist
+- Sports Psychologist
+- Medical Consultant
+- AI Coach
+
+Professional Users interact only with users assigned through the platform's business workflows.
+
+---
+
+## 5.3 Administrative User
+
+Administrative Users are responsible for operating and governing the platform.
+
+Typical responsibilities include:
+
+- User administration
+- Professional administration
+- Content moderation
+- Subscription management
+- Platform configuration
+- Operational monitoring
+- Business reporting
+- System governance
+
+Administrative permissions are controlled through authorization policies defined in dedicated security documentation.

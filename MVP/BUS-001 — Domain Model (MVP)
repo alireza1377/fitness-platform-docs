@@ -1,0 +1,184 @@
+# Domain Model (MVP)
+
+| Property | Value |
+|----------|-------|
+| Document ID | BUS-001 |
+| Title | Domain Model (MVP) |
+| Version | 1.0 |
+| Status | Draft |
+| Owner | Architecture Team |
+
+---
+
+# 1. Overview
+
+This document defines the core business entities of the MVP.
+
+Each entity represents a business concept that will later become database models, backend entities, and API resources.
+
+---
+
+# 2. Core Entities
+
+## User
+
+### Purpose
+
+Represents a registered platform account.
+
+### Owns
+
+- Profile
+- Goals
+- Measurements
+- Progress
+- Subscription
+
+### Relationships
+
+User
+- has one Profile
+- has many Goals
+- has many Measurements
+- has many Progress Records
+- has one Subscription
+- belongs to zero or more Programs
+
+---
+
+## Profile
+
+### Purpose
+
+Stores personal information required for personalization.
+
+### Examples
+
+- Age
+- Height
+- Weight
+- Gender
+- Fitness Level
+
+---
+
+## Program
+
+### Purpose
+
+Represents a structured journey toward a health objective.
+
+### Types
+
+- Workout Program
+- Nutrition Program
+
+---
+
+## Program Item
+
+### Purpose
+
+Represents a single activity inside a Program.
+
+Examples
+
+- Workout
+- Lesson
+- Daily Task
+
+---
+
+## Content
+
+### Purpose
+
+Educational resources used inside Programs.
+
+### Types
+
+- Video
+- Course
+- Collection
+
+---
+
+## Progress
+
+### Purpose
+
+Stores user progress across Programs and Content.
+
+### Relationships
+
+Progress belongs to:
+
+- User
+- Program
+- Content
+---
+
+## Measurement
+
+### Purpose
+
+Stores user body measurements over time.
+
+---
+
+## Goal
+
+### Purpose
+
+Represents a measurable objective defined by the user.
+
+Examples
+
+- Lose Weight
+- Gain Muscle
+- Improve Endurance
+
+---
+
+## Professional
+
+### Purpose
+
+Represents a Trainer or Nutritionist assigned to users.
+
+---
+
+## Subscription
+
+### Purpose
+
+Defines user access level.
+
+### Types
+
+- Free
+- Premium
+
+---
+
+# 3. High-Level Relationships
+
+User
+├── Profile
+├── Goal
+├── Measurement
+├── Progress
+├── Subscription
+└── Program
+
+Program
+├── Program Item
+└── Content
+
+Professional
+└── User
+
+Progress
+├── User
+├── Program
+└── Content

@@ -12,11 +12,9 @@
 
 # Purpose
 
-Represents reusable digital content used throughout the platform.
+Represents reusable content that can be attached to one or more Program Items.
 
-Content is independent from programs and can be referenced by multiple Program Items.
-
-The Content Engine supports educational materials, multimedia, AI-generated resources, and future content types.
+Content may be a video, article, recipe, PDF, or any educational resource.
 
 ---
 
@@ -26,20 +24,13 @@ The Content Engine supports educational materials, multimedia, AI-generated reso
 |---------|------|-------------|-------------|
 | id | UUID | Primary Key | Content identifier |
 | title | VARCHAR(255) | NOT NULL | Content title |
-| slug | VARCHAR(255) | UNIQUE, NOT NULL | SEO-friendly identifier |
-| description | TEXT | Nullable | Short description |
+| description | TEXT | Nullable | Content description |
 | content_type | ENUM | NOT NULL | Content type |
-| source_type | ENUM | NOT NULL | Storage source |
-| url | TEXT | Nullable | Resource URL |
-| thumbnail_url | TEXT | Nullable | Preview image |
-| duration_seconds | INTEGER | Nullable | Media duration |
-| language | VARCHAR(10) | DEFAULT 'en' | Content language |
+| url | TEXT | NOT NULL | Content location |
+| duration_seconds | INTEGER | Nullable | Duration for media content |
 | visibility | ENUM | NOT NULL | Access level |
 | status | ENUM | NOT NULL | Publication status |
-| version | INTEGER | DEFAULT 1 | Content version |
-| metadata | JSONB | Nullable | Flexible content configuration |
-| published_at | TIMESTAMP | Nullable | Publish timestamp |
-| created_at | TIMESTAMP | NOT NULL | Creation timestamp |
+| created_at | TIMESTAMP | NOT NULL | Record creation timestamp |
 | updated_at | TIMESTAMP | NOT NULL | Last update timestamp |
 | deleted_at | TIMESTAMP | Nullable | Soft delete timestamp |
 
@@ -50,26 +41,10 @@ The Content Engine supports educational materials, multimedia, AI-generated reso
 ## ContentType
 
 - Video
-- Audio
-- PDF
 - Article
+- PDF
 - Recipe
-- ExerciseDemo
-- ImageGallery
-- Quiz
-- Assessment
-- ExternalLink
-- AIGenerated
-- Custom
-
----
-
-## SourceType
-
-- Internal
-- External
-- AI
-- CDN
+- Image
 
 ---
 
@@ -92,7 +67,7 @@ The Content Engine supports educational materials, multimedia, AI-generated reso
 
 ## BR-001
 
-Content may exist without belonging to any program.
+Content can exist without being assigned to any Program Item.
 
 ---
 
@@ -104,29 +79,13 @@ A single Content record may be referenced by multiple Program Items.
 
 ## BR-003
 
-Published content becomes immutable.
-
-Major updates create a new version.
+Only Published content can be displayed to users.
 
 ---
 
 ## BR-004
 
-Content uses Soft Delete.
-
-Historical references must remain valid.
-
----
-
-## BR-005
-
-Premium content requires an active Premium subscription.
-
----
-
-## BR-006
-
-Business-specific configuration must be stored inside the `metadata` field.
+Soft Delete must be used.
 
 ---
 
@@ -141,64 +100,20 @@ contents
 # Indexes
 
 - PK(id)
-- UNIQUE(slug)
 - INDEX(content_type)
-- INDEX(source_type)
 - INDEX(status)
 - INDEX(visibility)
-- INDEX(published_at)
-
----
-
-# Lifecycle
-
-Draft
-
-↓
-
-Published
-
-↓
-
-Archived
 
 ---
 
 # Notes
 
-The Content Engine is platform-wide.
-
 Examples:
 
-Video
+- Workout Video
+- Exercise Guide
+- Nutrition Article
+- Healthy Recipe
+- Stretching PDF
 
-Audio
-
-PDF
-
-Recipe
-
-Exercise Demonstration
-
-Article
-
-Quiz
-
-AI Generated Lesson
-
-External Link
-
-The metadata field allows unlimited extensibility.
-
-Examples include:
-
-- Video quality
-- Subtitle languages
-- Calories
-- Equipment
-- Difficulty
-- AI prompt
-- File size
-- CDN information
-- Tags
-- SEO metadata
+Content is reusable and independent from Programs.

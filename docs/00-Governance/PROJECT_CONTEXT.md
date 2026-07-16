@@ -304,24 +304,20 @@ It does not own user progress.
 
 ### Program
 
-The Program domain organizes structured user journeys.
+A Program is a structured business construct that guides a user toward achieving a specific health objective.
 
-Programs define how users achieve measurable outcomes through guided activities.
+A Program organizes educational content, activities, milestones, and measurable outcomes into a coherent journey.
 
-Examples include:
+Programs define **what the user should accomplish**, while other domains define **how the journey is delivered, consumed, and measured**.
+
+Examples of programs include:
 
 - Fitness Programs
 - Nutrition Programs
 - Learning Programs
 - Challenge Programs
 
-Future program categories may include:
-
-- Rehabilitation Programs
-- Mental Wellness Programs
-- Sleep Improvement Programs
-
-Programs consume educational content but remain independent from the Content domain.
+Future program categories may be introduced without changing the underlying business concept of a Program.
 
 ---
 

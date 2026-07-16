@@ -540,3 +540,183 @@ The project adopts the following long-term business constraints:
 - Design for incremental evolution.
 - Avoid introducing new domains without clear business justification.
 - Every new capability must have an explicit business owner.
+# 9. Project Ecosystem
+
+The Fitness Platform operates within a broader digital health ecosystem.
+
+It is designed to connect users, healthcare professionals, educational resources, and supporting digital services through clearly defined business boundaries.
+
+The platform delivers an integrated experience while allowing individual business capabilities to evolve independently.
+
+---
+
+## 9.1 Internal Ecosystem
+
+The internal ecosystem consists of the following primary participants:
+
+| Participant | Responsibility |
+|-------------|----------------|
+| Platform Users | Consume programs, educational content, and professional services. |
+| Professional Users | Provide coaching, guidance, and health-related services. |
+| Platform Administrators | Govern platform operations and business processes. |
+| Content Team | Creates and maintains educational resources. |
+| Business Operations | Defines policies, workflows, and business rules. |
+
+Each participant contributes to a unified platform experience while maintaining clearly defined responsibilities.
+
+---
+
+## 9.2 External Ecosystem
+
+The platform may integrate with external systems that provide supporting capabilities.
+
+Examples include:
+
+- Payment providers
+- Authentication providers
+- Notification providers
+- Cloud media delivery services
+- Analytics platforms
+- Wearable device providers
+- Third-party health platforms
+
+External systems are considered replaceable infrastructure and must not define or influence the platform's business rules.
+
+Business knowledge always remains inside the platform.
+
+---
+
+# 10. Governance Principles
+
+The project is governed by a set of long-term principles that ensure consistency across business, product, architecture, and implementation.
+
+These principles are expected to remain stable throughout the lifetime of the platform.
+
+---
+
+## Documentation First
+
+Approved documentation is the authoritative source of project knowledge.
+
+Implementation must follow approved documentation.
+
+---
+
+## Business-Driven Decision Making
+
+Business objectives determine product direction and architectural decisions.
+
+Technology exists to support business goals—not to define them.
+
+---
+
+## Explicit Ownership
+
+Every business capability, domain, document, and major decision must have a clearly identified owner.
+
+Clear ownership improves accountability and reduces ambiguity.
+
+---
+
+## Incremental Evolution
+
+The platform evolves through controlled, incremental improvements.
+
+Large-scale redesigns should be avoided unless driven by fundamental business change.
+
+---
+
+## Controlled Complexity
+
+Complexity should be introduced only when it delivers measurable business value.
+
+Premature optimization and unnecessary abstraction are discouraged.
+
+---
+
+## Traceable Decisions
+
+Significant business and architectural decisions must be documented and versioned.
+
+Decision history should remain accessible for future reference.
+
+---
+
+# 11. Success Criteria
+
+The long-term success of the platform is evaluated across four dimensions.
+
+---
+
+## Business Success
+
+The platform successfully delivers sustainable business value by:
+
+- Supporting long-term customer relationships.
+- Enabling scalable subscription-based services.
+- Delivering measurable value through professional guidance.
+- Establishing a trusted digital health ecosystem.
+
+---
+
+## Product Success
+
+The platform enables users to:
+
+- Learn through structured educational experiences.
+- Follow personalized health programs.
+- Monitor measurable progress.
+- Achieve meaningful long-term health improvements.
+
+---
+
+## Technical Success
+
+The platform remains:
+
+- Maintainable
+- Modular
+- Scalable
+- Well-documented
+- Adaptable to future business needs
+
+Technical success is measured by the platform's ability to evolve without major architectural redesign.
+
+---
+
+## Documentation Success
+
+Project documentation remains:
+
+- Accurate
+- Current
+- Consistent
+- Traceable
+- AI-readable
+- Technology-independent where appropriate
+
+Documentation should always reflect the current approved understanding of the business and the system.
+
+---
+
+# 12. Strategic Direction
+
+The Fitness Platform is designed as a long-term digital health platform.
+
+The initial product scope focuses on fitness and nutrition, while the underlying business model is intentionally designed to support future expansion into adjacent health domains.
+
+Potential future business areas include:
+
+- Rehabilitation
+- Preventive health
+- Mental wellness
+- Sleep improvement
+- Chronic condition support
+- AI-assisted health coaching
+- Connected health devices
+
+Future capabilities should extend existing business domains whenever possible.
+
+New business domains should only be introduced when justified by clear business requirements.
+
+Strategic expansion must preserve the platform's core principles, domain boundaries, and documentation standards.

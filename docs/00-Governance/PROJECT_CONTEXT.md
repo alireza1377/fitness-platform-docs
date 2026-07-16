@@ -720,3 +720,210 @@ Future capabilities should extend existing business domains whenever possible.
 New business domains should only be introduced when justified by clear business requirements.
 
 Strategic expansion must preserve the platform's core principles, domain boundaries, and documentation standards.
+
+# 13. Repository Context
+
+This document is part of the official Fitness Platform documentation repository.
+
+It provides the highest-level business context and serves as the foundation for all downstream documentation.
+
+No downstream document may contradict the stable business knowledge defined in this document.
+
+---
+
+## 13.1 Document Relationships
+
+This document directly influences the following documents:
+
+| Document | Relationship |
+|----------|--------------|
+| Product Vision | Defines product direction based on business context. |
+| Product Requirements Document | Defines functional and non-functional requirements. |
+| Business Capability Map | Identifies business capabilities. |
+| Context Map | Defines domain boundaries and relationships. |
+| Domain Glossary | Defines shared business terminology. |
+| Domain Model | Defines business entities and aggregates. |
+| Software Architecture | Defines technical realization of business concepts. |
+| Database Design | Implements persistent business models. |
+| API Specification | Exposes business capabilities through interfaces. |
+
+Changes to this document may require updates to one or more downstream documents.
+
+---
+
+# 14. References
+
+## Governance Documents
+
+- GOV-001 — AI Manifest
+- GOV-003 — Document Registry
+- GOV-004 — Documentation Standards
+
+## Product Documents
+
+- PROD-001 — Product Vision
+- PROD-002 — Product Requirements Document
+
+## Business Documents
+
+- BUS-001 — Business Capability Map
+- BUS-002 — Context Map
+- BUS-003 — Domain Glossary
+- BUS-004 — Business Rules
+
+---
+
+# 15. AI Consumption Guidelines
+
+This repository is designed for both human readers and AI-assisted development tools.
+
+AI systems consuming this document shall treat it as the authoritative description of the project's stable business context.
+
+---
+
+## Stable Knowledge
+
+This document contains stable business knowledge.
+
+AI tools must not introduce implementation assumptions that are not explicitly documented.
+
+---
+
+## Technology Independence
+
+Technology choices, programming languages, frameworks, infrastructure, and deployment models are intentionally excluded.
+
+AI assistants must obtain those details from architecture documentation.
+
+---
+
+## Business Integrity
+
+Business terminology defined by the Domain Glossary must remain consistent across generated artifacts.
+
+AI systems must avoid introducing alternative terminology unless explicitly approved.
+
+---
+
+## Traceability
+
+Generated artifacts should preserve traceability back to the originating documentation whenever possible.
+
+Business concepts should never lose their documented ownership.
+
+---
+
+## Documentation Hierarchy
+
+When conflicts occur between documents, precedence is determined by the following hierarchy:
+
+1. Governance
+2. Product
+3. Business
+4. Architecture
+5. Data
+6. API
+7. Development
+
+Lower-level documents must never redefine higher-level business knowledge.
+
+---
+
+# 16. AI Metadata
+
+```yaml
+document:
+  id: GOV-002
+  title: Project Context
+  version: 1.0
+  status: Approved
+  classification: Governance
+
+repository:
+  name: Fitness Platform Documentation
+
+owner:
+  team: Architecture Team
+
+source_of_truth: true
+
+review_cycle:
+  trigger: Major Business Change
+
+depends_on:
+  - GOV-001
+
+influences:
+  - PROD-001
+  - PROD-002
+  - BUS-001
+  - BUS-002
+  - BUS-003
+  - BUS-004
+  - ARCH-001
+  - DATA-001
+  - API-001
+
+core_domains:
+  - Content
+  - Program
+  - Progress
+  - Professional Care
+
+keywords:
+  - Fitness
+  - Digital Health
+  - Program
+  - Learning
+  - Progress
+  - Professional
+  - Documentation
+  - DDD
+```
+
+---
+
+# 17. Knowledge Graph
+
+```mermaid
+graph TD
+
+GOV002[Project Context]
+
+GOV002 --> PROD001[Product Vision]
+
+GOV002 --> PROD002[Product Requirements]
+
+PROD002 --> BUS001[Business Capability Map]
+
+PROD002 --> BUS002[Context Map]
+
+PROD002 --> BUS003[Domain Glossary]
+
+BUS002 --> ARCH001[Software Architecture]
+
+ARCH001 --> DATA001[Database Design]
+
+ARCH001 --> API001[API Specification]
+```
+
+---
+
+# 18. Change History
+
+| Version | Date | Author | Description |
+|----------|------------|-------------------|--------------------------------|
+| 1.0 | 2026-07-16 | Architecture Team | Initial approved release. |
+
+---
+
+# 19. Approval
+
+| Role | Status |
+|------|--------|
+| Product Owner | Pending |
+| Business Owner | Pending |
+| Chief Architect | Approved |
+| Repository Maintainer | Pending |
+
+The document becomes the official source of truth after all required approvals are completed.

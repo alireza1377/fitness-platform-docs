@@ -27,6 +27,8 @@ Goals help users track their long-term health and fitness objectives.
 | goal_type | ENUM | NOT NULL | Goal category |
 | target_value | DECIMAL(10,2) | Nullable | Target value |
 | target_date | DATE | Nullable | Target completion date |
+| current_value | DECIMAL(8,2) | Nullable    | Current progress toward the goal |
+
 | status | ENUM | NOT NULL | Goal status |
 | created_at | TIMESTAMP | NOT NULL | Record creation timestamp |
 | updated_at | TIMESTAMP | NOT NULL | Last update timestamp |

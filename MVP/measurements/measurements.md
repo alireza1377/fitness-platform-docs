@@ -25,7 +25,7 @@ Measurements allow users to track their physical progress throughout their healt
 | id | UUID | Primary Key | Measurement identifier |
 | user_id | UUID | FK → users.id | Measurement owner |
 | measurement_type | ENUM | NOT NULL | Measurement category |
-| value | DECIMAL(10,2) | NOT NULL | Recorded value |
+| value | DECIMAL(8,2) | NOT NULL | Recorded value |
 | unit | VARCHAR(20) | NOT NULL | Measurement unit |
 | measured_at | TIMESTAMP | NOT NULL | Measurement date |
 | created_at | TIMESTAMP | NOT NULL | Record creation timestamp |

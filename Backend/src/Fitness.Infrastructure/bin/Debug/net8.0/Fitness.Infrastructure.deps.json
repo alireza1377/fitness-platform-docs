@@ -1,0 +1,71 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "Fitness.Infrastructure/1.0.0": {
+        "dependencies": {
+          "Fitness.Application": "1.0.0",
+          "Fitness.Domain": "1.0.0",
+          "Fitness.Shared": "1.0.0"
+        },
+        "runtime": {
+          "Fitness.Infrastructure.dll": {}
+        }
+      },
+      "Fitness.Application/1.0.0": {
+        "dependencies": {
+          "Fitness.Domain": "1.0.0",
+          "Fitness.Shared": "1.0.0"
+        },
+        "runtime": {
+          "Fitness.Application.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Fitness.Domain/1.0.0": {
+        "runtime": {
+          "Fitness.Domain.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Fitness.Shared/1.0.0": {
+        "runtime": {
+          "Fitness.Shared.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Fitness.Infrastructure/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Fitness.Application/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Fitness.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Fitness.Shared/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

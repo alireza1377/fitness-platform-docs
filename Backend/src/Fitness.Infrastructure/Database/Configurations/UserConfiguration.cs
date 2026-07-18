@@ -20,26 +20,25 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasMaxLength(100);
 
+        builder.Property(x => x.PhoneNumber)
+            .IsRequired()
+            .HasMaxLength(20);
+
         builder.Property(x => x.Email)
-            
-            .HasMaxLength(200);
-
-        builder.HasIndex(x => x.Email)
-            .IsUnique();
-
-       builder.Property(x => x.PhoneNumber)
-    .IsRequired()
-    .HasMaxLength(20);
+            .HasMaxLength(255);
 
         builder.HasIndex(x => x.PhoneNumber)
             .IsUnique();
 
-        
+        builder.HasIndex(x => x.Email)
+            .IsUnique();
 
-        builder.Property(x => x.IsActive)
-            .HasDefaultValue(true);
+        builder.HasOne(x => x.AuthIdentity)
+            .WithOne(x => x.User)
+            .HasForeignKey<AuthIdentity>(x => x.UserId);
 
-        builder.Property(x => x.IsVerified)
-            .HasDefaultValue(false);
+        builder.HasMany(x => x.RefreshTokens)
+            .WithOne(x => x.User)
+            .HasForeignKey(x => x.UserId);
     }
 }

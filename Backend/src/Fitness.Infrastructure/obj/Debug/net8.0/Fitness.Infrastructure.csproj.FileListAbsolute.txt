@@ -18,3 +18,5 @@ C:\Users\alireza\Desktop\fitness\fitness\fitness-platform-docs\Backend\src\Fitne
 C:\Users\alireza\Desktop\fitness\fitness\fitness-platform-docs\Backend\src\Fitness.Infrastructure\obj\Debug\net8.0\refint\Fitness.Infrastructure.dll
 C:\Users\alireza\Desktop\fitness\fitness\fitness-platform-docs\Backend\src\Fitness.Infrastructure\obj\Debug\net8.0\Fitness.Infrastructure.pdb
 C:\Users\alireza\Desktop\fitness\fitness\fitness-platform-docs\Backend\src\Fitness.Infrastructure\obj\Debug\net8.0\ref\Fitness.Infrastructure.dll
+C:\Users\alireza\Desktop\fitness\fitness\fitness-platform-docs\Backend\src\Fitness.Infrastructure\bin\Debug\net8.0\Fitness.Infrastructure.runtimeconfig.json
+C:\Users\alireza\Desktop\fitness\fitness\fitness-platform-docs\Backend\src\Fitness.Infrastructure\obj\Debug\net8.0\Fitness.Infrastructure.genruntimeconfig.cache

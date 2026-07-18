@@ -1,0 +1,319 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  male
+  female
+  other
+}
+
+enum SubscriptionStatus {
+  active
+  canceled
+  expired
+  pending
+}
+
+enum PaymentStatus {
+  pending
+  paid
+  failed
+  refunded
+}
+
+enum PaymentProvider {
+  zarinpal
+  idpay
+  nextpay
+  manual
+}
+
+model User {
+  id String @id @default(cuid())
+
+  email String? @unique @db.VarChar(255)
+  phone String? @unique @db.VarChar(20)
+
+  passwordHash String?
+
+  firstName String
+  lastName  String?
+
+  gender Gender?
+
+  birthDate DateTime?
+
+  profileImageUrl String?
+
+  isVerified Boolean @default(false)
+  isActive   Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscriptions Subscription[]
+  payments      Payment[]
+  userPrograms  UserProgram[]
+}
+
+model Subscription {
+  id String @id @default(cuid())
+
+  userId String
+
+  title String
+
+  price Decimal @db.Decimal(10, 2)
+
+  startDate DateTime
+
+  endDate DateTime
+
+  status SubscriptionStatus
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+model Payment {
+  id String @id @default(cuid())
+
+  userId String
+
+  amount Decimal @db.Decimal(10, 2)
+
+  provider PaymentProvider
+
+  status PaymentStatus
+
+  transactionId String?
+
+  authority String?
+
+  refId String?
+
+  paidAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+enum ProgramStatus {
+  draft
+  published
+  archived
+}
+
+enum ModuleType {
+  week
+  phase
+  custom
+}
+
+enum ItemType {
+  workout
+  nutrition
+  habit
+  rest
+  assessment
+}
+
+model Program {
+  id String @id @default(cuid())
+
+  title String
+  slug  String @unique
+
+  description String?
+
+  thumbnailUrl String?
+
+  difficulty Int
+
+  estimatedDays Int?
+
+  estimatedWeeks Int?
+
+  isPremium Boolean @default(false)
+
+  status ProgramStatus @default(draft)
+
+  createdBy String?
+  updatedBy String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  modules      ProgramModule[]
+  userPrograms UserProgram[]
+
+  @@index([status])
+}
+
+model ProgramModule {
+  id String @id @default(cuid())
+
+  programId String
+
+  title String
+
+  description String?
+
+  sortOrder Int
+
+  moduleType ModuleType
+
+  createdAt DateTime @default(now())
+
+  program Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  items ProgramItem[]
+
+  @@index([programId])
+  @@index([sortOrder])
+}
+
+model ProgramItem {
+  id String @id @default(cuid())
+
+  moduleId String
+
+  contentId String?
+
+  title String
+
+  description String?
+
+  itemType ItemType
+
+  dayNumber Int?
+
+  sortOrder Int
+
+  isRequired Boolean @default(true)
+
+  createdAt DateTime @default(now())
+
+  module ProgramModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  content Content? @relation(fields: [contentId], references: [id], onDelete: SetNull)
+
+  progresses Progress[]
+
+  @@index([moduleId])
+  @@index([sortOrder])
+}
+
+enum ContentType {
+  video
+  article
+  image
+  audio
+  pdf
+}
+
+enum UserProgramStatus {
+  active
+  completed
+  paused
+  canceled
+}
+
+model Content {
+  id String @id @default(cuid())
+
+  title String
+
+  description String?
+
+  type ContentType
+
+  url String
+
+  thumbnailUrl String?
+
+  duration Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  programItems ProgramItem[]
+}
+
+model UserProgram {
+  id String @id @default(cuid())
+
+  userId String
+
+  programId String
+
+  status UserProgramStatus @default(active)
+
+  startedAt DateTime?
+
+  completedAt DateTime?
+
+  currentDay Int @default(1)
+
+  progressPercent Float @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  program Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  progresses Progress[]
+
+  @@unique([userId, programId])
+  @@index([userId])
+  @@index([programId])
+}
+
+enum ProgressStatus {
+  pending
+  completed
+  skipped
+}
+
+model Progress {
+  id String @id @default(cuid())
+
+  userProgramId String
+
+  programItemId String
+
+  status ProgressStatus @default(pending)
+
+  completedAt DateTime?
+
+  note String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userProgram UserProgram @relation(fields: [userProgramId], references: [id], onDelete: Cascade)
+
+  programItem ProgramItem @relation(fields: [programItemId], references: [id], onDelete: Cascade)
+
+  @@unique([userProgramId, programItemId])
+  @@index([userProgramId])
+  @@index([programItemId])
+  @@index([status])
+}

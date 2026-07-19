@@ -1,78 +1,149 @@
-using Fitness.Application.Interfaces;
-using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
+using Fitness.Application.Exceptions;
+using Fitness.Application.Interfaces;
 using Fitness.Infrastructure.Helpers;
 using Fitness.Infrastructure.Models;
-using Fitness.Application.Exceptions;
+using Microsoft.Extensions.Caching.Distributed;
+
 namespace Fitness.Infrastructure.Services;
 
 public class RedisOtpService : IOtpService
 {
-   private readonly IDistributedCache _cache;
-private readonly ISmsService _smsService;
+    private readonly IDistributedCache _cache;
+    private readonly ISmsService _smsService;
 
-public RedisOtpService(
-    IDistributedCache cache,
-    ISmsService smsService)
-{
-    _cache = cache;
-    _smsService = smsService;
-}
+    private static readonly TimeSpan OtpLifetime = TimeSpan.FromMinutes(5);
+    private static readonly TimeSpan OtpCooldown = TimeSpan.FromSeconds(60);
 
-   public async Task SendOtpAsync(
-    string phoneNumber,
-    CancellationToken cancellationToken = default)
-{
-    var otp = OtpGenerator.Generate();
+    private const int MaxFailedAttempts = 5;
 
-    var model = new OtpCacheModel
+    public RedisOtpService(
+        IDistributedCache cache,
+        ISmsService smsService)
     {
-        CodeHash = OtpHasher.Hash(otp),
-        CreatedAt = DateTime.UtcNow,
-        FailedAttempts = 0
-    };
+        _cache = cache;
+        _smsService = smsService;
+    }
 
-    var json = JsonSerializer.Serialize(model);
+    public async Task SendOtpAsync(
+        string phoneNumber,
+        CancellationToken cancellationToken = default)
+    {
+        var key = $"otp:{phoneNumber}";
+        var cooldownKey = $"otp:cooldown:{phoneNumber}";
 
-    await _cache.SetStringAsync(
-        $"otp:{phoneNumber}",
-        json,
-        new DistributedCacheEntryOptions
+        // جلوگیری از ارسال پشت سر هم OTP
+        var cooldownExists = await _cache.GetStringAsync(
+            cooldownKey,
+            cancellationToken);
+
+        if (!string.IsNullOrWhiteSpace(cooldownExists))
+            throw new OtpAlreadySentException();
+
+        var otp = OtpGenerator.Generate();
+
+        var model = new OtpCacheModel
         {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
-        },
-        cancellationToken);
+            CodeHash = OtpHasher.Hash(otp),
+            CreatedAt = DateTime.UtcNow,
+            FailedAttempts = 0
+        };
 
-    await _smsService.SendOtpAsync(
-        phoneNumber,
-        otp,
-        cancellationToken);
-}
+        var json = JsonSerializer.Serialize(model);
 
-   public async Task VerifyOtpAsync(
-    string phoneNumber,
-    string code,
-    CancellationToken cancellationToken = default)
-{
-    var json = await _cache.GetStringAsync(
-        $"otp:{phoneNumber}",
-        cancellationToken);
+        // ذخیره OTP
+        await _cache.SetStringAsync(
+            key,
+            json,
+            new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = OtpLifetime
+            },
+            cancellationToken);
 
-    if (string.IsNullOrWhiteSpace(json))
-       throw new OtpExpiredException();
+        // ایجاد Cooldown
+        await _cache.SetStringAsync(
+            cooldownKey,
+            "1",
+            new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = OtpCooldown
+            },
+            cancellationToken);
 
-    var model = JsonSerializer.Deserialize<OtpCacheModel>(json);
+        // ارسال پیامک
+        await _smsService.SendOtpAsync(
+            phoneNumber,
+            otp,
+            cancellationToken);
+    }
 
-    if (model is null)
-       throw new OtpExpiredException();
+    public async Task VerifyOtpAsync(
+        string phoneNumber,
+        string code,
+        CancellationToken cancellationToken = default)
+    {
+        var key = $"otp:{phoneNumber}";
 
-    var hash = OtpHasher.Hash(code);
+        var json = await _cache.GetStringAsync(
+            key,
+            cancellationToken);
 
-    if (hash != model.CodeHash)
-      throw new InvalidOtpException();
+        if (string.IsNullOrWhiteSpace(json))
+            throw new OtpExpiredException();
 
-    await _cache.RemoveAsync(
-        $"otp:{phoneNumber}",
-        cancellationToken);
-}
+        var model = JsonSerializer.Deserialize<OtpCacheModel>(json);
+
+        if (model is null)
+            throw new OtpExpiredException();
+
+        // بررسی زمان اعتبار OTP
+        var remaining =
+            OtpLifetime - (DateTime.UtcNow - model.CreatedAt);
+
+        if (remaining <= TimeSpan.Zero)
+        {
+            await _cache.RemoveAsync(
+                key,
+                cancellationToken);
+
+            throw new OtpExpiredException();
+        }
+
+        var hash = OtpHasher.Hash(code);
+
+        // کد اشتباه است
+        if (hash != model.CodeHash)
+        {
+            model.FailedAttempts++;
+
+            if (model.FailedAttempts >= MaxFailedAttempts)
+            {
+                await _cache.RemoveAsync(
+                    key,
+                    cancellationToken);
+
+                throw new TooManyOtpAttemptsException();
+            }
+
+            var updatedJson = JsonSerializer.Serialize(model);
+
+            // ذخیره مجدد بدون تمدید زمان OTP
+            await _cache.SetStringAsync(
+                key,
+                updatedJson,
+                new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = remaining
+                },
+                cancellationToken);
+
+            throw new InvalidOtpException();
+        }
+
+        // OTP صحیح بود
+        await _cache.RemoveAsync(
+            key,
+            cancellationToken);
+    }
 }

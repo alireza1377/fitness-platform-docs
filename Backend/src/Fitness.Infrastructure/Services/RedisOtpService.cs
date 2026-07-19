@@ -3,6 +3,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
 using Fitness.Infrastructure.Helpers;
 using Fitness.Infrastructure.Models;
+using Fitness.Application.Exceptions;
 namespace Fitness.Infrastructure.Services;
 
 public class RedisOtpService : IOtpService
@@ -58,17 +59,17 @@ public RedisOtpService(
         cancellationToken);
 
     if (string.IsNullOrWhiteSpace(json))
-        throw new Exception("OTP expired.");
+       throw new OtpExpiredException();
 
     var model = JsonSerializer.Deserialize<OtpCacheModel>(json);
 
     if (model is null)
-        throw new Exception("OTP not found.");
+       throw new OtpExpiredException();
 
     var hash = OtpHasher.Hash(code);
 
     if (hash != model.CodeHash)
-        throw new Exception("OTP is invalid.");
+      throw new InvalidOtpException();
 
     await _cache.RemoveAsync(
         $"otp:{phoneNumber}",

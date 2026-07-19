@@ -8,7 +8,7 @@ public class User : AuditableEntity
 
     public string LastName { get; private set; } = string.Empty;
 
-    public string Email { get; private set; } = string.Empty;
+    public string? Email { get; private set; }
 
     public string PhoneNumber { get; private set; } = string.Empty;
 
@@ -40,7 +40,7 @@ public class User : AuditableEntity
         FirstName = firstName;
         LastName = lastName;
         PhoneNumber = phoneNumber;
-        Email = email ?? string.Empty;
+        Email = email;
     }
 
     // ورود با OTP
@@ -49,7 +49,7 @@ public class User : AuditableEntity
         PhoneNumber = phoneNumber;
         FirstName = string.Empty;
         LastName = string.Empty;
-        Email = string.Empty;
+        Email = null;
     }
 
     public void Verify()

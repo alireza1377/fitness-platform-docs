@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddRedis(builder.Configuration);
 builder.Services.AddApplicationServices();
+builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -25,8 +26,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 // Authentication
-// app.UseAuthentication();
-// app.UseAuthorization();
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Map Controllers
 app.MapControllers();

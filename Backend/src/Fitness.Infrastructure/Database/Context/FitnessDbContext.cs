@@ -10,8 +10,11 @@ public class FitnessDbContext : DbContext
     {
     }
 
-    // Entities
     public DbSet<User> Users => Set<User>();
+
+    public DbSet<AuthIdentity> AuthIdentities => Set<AuthIdentity>();
+
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

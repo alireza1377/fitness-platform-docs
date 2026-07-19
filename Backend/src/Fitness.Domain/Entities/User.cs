@@ -12,19 +12,25 @@ public class User : AuditableEntity
 
     public string PhoneNumber { get; private set; } = string.Empty;
 
+    public string? AvatarUrl { get; private set; }
+
     public bool IsActive { get; private set; } = true;
 
     public bool IsVerified { get; private set; } = false;
 
+    public DateTime? LastLoginAt { get; private set; }
+
     // Navigation
-   public AuthIdentity? AuthIdentity { get; private set; }
-   public ICollection<RefreshToken> RefreshTokens { get; private set; }
-    = new List<RefreshToken>();
+    public AuthIdentity? AuthIdentity { get; private set; }
+
+    public ICollection<RefreshToken> RefreshTokens { get; private set; }
+        = new List<RefreshToken>();
 
     private User()
     {
     }
 
+    // ثبت‌نام کامل
     public User(
         string firstName,
         string lastName,
@@ -37,15 +43,18 @@ public class User : AuditableEntity
         Email = email ?? string.Empty;
     }
 
+    // ورود با OTP
+    public User(string phoneNumber)
+    {
+        PhoneNumber = phoneNumber;
+        FirstName = string.Empty;
+        LastName = string.Empty;
+        Email = string.Empty;
+    }
+
     public void Verify()
     {
         IsVerified = true;
-        SetUpdated();
-    }
-
-    public void Deactivate()
-    {
-        IsActive = false;
         SetUpdated();
     }
 
@@ -55,16 +64,32 @@ public class User : AuditableEntity
         SetUpdated();
     }
 
+    public void Deactivate()
+    {
+        IsActive = false;
+        SetUpdated();
+    }
+
+    public void SetLastLogin()
+    {
+        LastLoginAt = DateTime.UtcNow;
+        SetUpdated();
+    }
+
     public void UpdateProfile(
         string firstName,
         string lastName,
-        string? email = null)
+        string? email = null,
+        string? avatarUrl = null)
     {
         FirstName = firstName;
         LastName = lastName;
 
         if (!string.IsNullOrWhiteSpace(email))
             Email = email;
+
+        if (!string.IsNullOrWhiteSpace(avatarUrl))
+            AvatarUrl = avatarUrl;
 
         SetUpdated();
     }

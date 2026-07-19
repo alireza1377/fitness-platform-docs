@@ -6,5 +6,16 @@ public class LoginResponse
 
     public string RefreshToken { get; set; } = string.Empty;
 
-    public bool IsNewUser { get; set; }
+    public int ExpiresIn { get; set; }
+
+    public UserDto User { get; set; } = default!;
+}
+
+public class UserDto
+{
+    public Guid Id { get; set; }
+
+    public string PhoneNumber { get; set; } = string.Empty;
+
+    public bool IsGuest { get; set; }
 }

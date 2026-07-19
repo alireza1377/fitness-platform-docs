@@ -9,49 +9,53 @@ namespace Fitness.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IOtpService _otpService;
+    private readonly IAuthService _authService;
 
-    public AuthController(IOtpService otpService)
+    public AuthController(
+        IOtpService otpService,
+        IAuthService authService)
     {
         _otpService = otpService;
+        _authService = authService;
     }
 
     [HttpPost("send-otp")]
-    public async Task<IActionResult> SendOtp(
-        [FromBody] SendOtpRequest request,
-        CancellationToken cancellationToken)
-    {
-        await _otpService.SendOtpAsync(
-            request.PhoneNumber,
-            cancellationToken);
-
-        return Ok(new
-        {
-            Message = "OTP sent successfully."
-        });
-    }
-    [HttpPost("verify-otp")]
-public async Task<IActionResult> VerifyOtp(
-    [FromBody] VerifyOtpRequest request,
+public async Task<IActionResult> SendOtp(
+    [FromBody] SendOtpRequest request,
     CancellationToken cancellationToken)
 {
-    try
-    {
-        await _otpService.VerifyOtpAsync(
-            request.PhoneNumber,
-            request.Code,
-            cancellationToken);
+    await _authService.SendOtpAsync(
+        request.PhoneNumber,
+        cancellationToken);
 
-        return Ok(new
-        {
-            Message = "OTP verified successfully."
-        });
-    }
-    catch (Exception ex)
+    return Ok(new
     {
-        return BadRequest(new
-        {
-            Message = ex.Message
-        });
-    }
+        message = "OTP sent successfully."
+    });
 }
+
+    [HttpPost("verify-otp")]
+    public async Task<ActionResult<LoginResponse>> VerifyOtp(
+        [FromBody] VerifyOtpRequest request,
+        CancellationToken cancellationToken)
+    {
+        var response =
+            await _authService.VerifyOtpAsync(
+                request.PhoneNumber,
+                request.Code,
+                cancellationToken);
+
+        return Ok(response);
+    }
+
+    [HttpPost("guest")]
+    public async Task<ActionResult<LoginResponse>> GuestLogin(
+        CancellationToken cancellationToken)
+    {
+        var response =
+            await _authService.GuestLoginAsync(
+                cancellationToken);
+
+        return Ok(response);
+    }
 }

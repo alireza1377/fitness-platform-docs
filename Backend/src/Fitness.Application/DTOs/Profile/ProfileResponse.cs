@@ -27,4 +27,8 @@ public class ProfileResponse
     public FitnessGoal? Goal { get; set; }
 
     public ActivityLevel? ActivityLevel { get; set; }
+
+    public decimal? Bmi { get; set; }
+
+public string? BmiStatus { get; set; }
 }

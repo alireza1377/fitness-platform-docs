@@ -1,5 +1,6 @@
 using Fitness.Application.DTOs.Profile;
 using Fitness.Application.Interfaces;
+using Fitness.Domain.Services;
 
 namespace Fitness.Application.Services;
 
@@ -29,20 +30,40 @@ public class ProfileService : IProfileService
         if (user is null)
             throw new Exception("User not found.");
 
+decimal? bmi = null;
+string? bmiStatus = null;
+
+if (user.Height.HasValue &&
+    user.Weight.HasValue &&
+    user.Height.Value > 0 &&
+    user.Weight.Value > 0)
+{
+    bmi = BmiCalculator.Calculate(
+        user.Height.Value,
+        user.Weight.Value);
+
+    bmiStatus = BmiCalculator.GetStatus(bmi.Value);
+}
+
         return new ProfileResponse
-        {
-            Id = user.Id,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Email = user.Email,
-            PhoneNumber = user.PhoneNumber,
-            AvatarUrl = user.AvatarUrl,
-            BirthDate = user.BirthDate,
-            Gender = user.Gender,
-            Height = user.Height,
-            Weight = user.Weight,
-            Goal = user.Goal,
-            ActivityLevel = user.ActivityLevel
+{
+    Id = user.Id,
+    FirstName = user.FirstName,
+    LastName = user.LastName,
+    Email = user.Email,
+    PhoneNumber = user.PhoneNumber,
+    AvatarUrl = user.AvatarUrl,
+
+    BirthDate = user.BirthDate,
+    Gender = user.Gender,
+    Height = user.Height,
+    Weight = user.Weight,
+
+    Bmi = bmi,
+    BmiStatus = bmiStatus,
+
+    Goal = user.Goal,
+    ActivityLevel = user.ActivityLevel
         };
     }
 

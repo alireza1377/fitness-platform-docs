@@ -35,6 +35,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAuthIdentityRepository, AuthIdentityRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
+services.AddScoped<ICategoryRepository, CategoryRepository>();
+services.AddScoped<IFitnessProgramRepository, FitnessProgramRepository>();
+services.AddScoped<IProgramVideoRepository, ProgramVideoRepository>();
+
         // Services
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IOtpService, RedisOtpService>();

@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Fitness.Application.Interfaces;
 using Microsoft.AspNetCore.Http;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Fitness.Infrastructure.Services;
 
@@ -17,9 +18,9 @@ public class CurrentUserService : ICurrentUserService
     {
         get
         {
-            var value = _httpContextAccessor.HttpContext?
-                .User?
-                .FindFirstValue(ClaimTypes.NameIdentifier);
+           var value = _httpContextAccessor.HttpContext?
+    .User?
+    .FindFirstValue(JwtRegisteredClaimNames.Sub);
 
             if (Guid.TryParse(value, out var id))
                 return id;

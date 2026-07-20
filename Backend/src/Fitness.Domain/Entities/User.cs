@@ -1,4 +1,5 @@
 using Fitness.Domain.Common;
+using Fitness.Domain.Enums;
 
 namespace Fitness.Domain.Entities;
 
@@ -13,6 +14,18 @@ public class User : AuditableEntity
     public string PhoneNumber { get; private set; } = string.Empty;
 
     public string? AvatarUrl { get; private set; }
+
+    public DateOnly? BirthDate { get; private set; }
+
+    public Gender? Gender { get; private set; }
+
+    public decimal? Height { get; private set; }
+
+    public decimal? Weight { get; private set; }
+
+    public FitnessGoal? Goal { get; private set; }
+
+    public ActivityLevel? ActivityLevel { get; private set; }
 
     public bool IsActive { get; private set; } = true;
 
@@ -49,7 +62,6 @@ public class User : AuditableEntity
         PhoneNumber = phoneNumber;
         FirstName = string.Empty;
         LastName = string.Empty;
-        Email = null;
     }
 
     public void Verify()
@@ -76,28 +88,36 @@ public class User : AuditableEntity
         SetUpdated();
     }
 
-    public void UpdateProfile(
-        string firstName,
-        string lastName,
-        string? email = null,
-        string? avatarUrl = null)
-    {
-        FirstName = firstName;
-        LastName = lastName;
-
-        if (!string.IsNullOrWhiteSpace(email))
-            Email = email;
-
-        if (!string.IsNullOrWhiteSpace(avatarUrl))
-            AvatarUrl = avatarUrl;
-
-        SetUpdated();
-    }
-
     public void ChangePhoneNumber(string phoneNumber)
     {
         PhoneNumber = phoneNumber;
         IsVerified = false;
+        SetUpdated();
+    }
+
+    public void UpdateProfile(
+        string firstName,
+        string lastName,
+        string? email,
+        string? avatarUrl,
+        DateOnly? birthDate,
+        Gender? gender,
+        decimal? height,
+        decimal? weight,
+        FitnessGoal? goal,
+        ActivityLevel? activityLevel)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+        Email = email;
+        AvatarUrl = avatarUrl;
+
+        BirthDate = birthDate;
+        Gender = gender;
+        Height = height;
+        Weight = weight;
+        Goal = goal;
+        ActivityLevel = activityLevel;
 
         SetUpdated();
     }

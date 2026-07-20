@@ -6,8 +6,7 @@ using Microsoft.AspNetCore.Diagnostics;
 
 namespace Fitness.API.ExceptionHandlers;
 
-public sealed class GlobalExceptionHandler
-    : IExceptionHandler
+public sealed class GlobalExceptionHandler : IExceptionHandler
 {
     private readonly ILogger<GlobalExceptionHandler> _logger;
 
@@ -27,32 +26,25 @@ public sealed class GlobalExceptionHandler
         var statusCode = exception switch
         {
             InvalidOtpException => StatusCodes.Status400BadRequest,
-
             OtpExpiredException => StatusCodes.Status400BadRequest,
-
             TooManyOtpAttemptsException => StatusCodes.Status429TooManyRequests,
-
             OtpAlreadySentException => StatusCodes.Status429TooManyRequests,
-
             _ => StatusCodes.Status500InternalServerError
         };
 
         var code = exception switch
         {
             AppException ex => ex.ErrorCode,
-
             _ => "INTERNAL_SERVER_ERROR"
         };
 
         var message = exception switch
         {
             AppException ex => ex.Message,
-
             _ => "خطای داخلی سرور رخ داده است."
         };
 
         context.Response.StatusCode = statusCode;
-
         context.Response.ContentType = "application/json";
 
         var response = new ErrorResponse

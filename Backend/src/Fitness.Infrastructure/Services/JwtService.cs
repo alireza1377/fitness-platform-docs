@@ -7,7 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-
+using System.Security.Claims;
 namespace Fitness.Infrastructure.Services;
 
 public class JwtService : IJwtService
@@ -86,4 +86,44 @@ public class JwtService : IJwtService
         return Convert.ToBase64String(Guid.NewGuid().ToByteArray())
              + Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     }
+    public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
+    {
+    var tokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateAudience = true,
+        ValidateIssuer = true,
+        ValidateIssuerSigningKey = true,
+
+        ValidateLifetime = false,
+
+        ValidIssuer = _options.Issuer,
+        ValidAudience = _options.Audience,
+
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(_options.SecretKey))
+    };
+
+    var tokenHandler = new JwtSecurityTokenHandler();
+  try
+    {
+        var principal = tokenHandler.ValidateToken(
+            token,
+            tokenValidationParameters,
+            out SecurityToken securityToken);
+
+        if (securityToken is not JwtSecurityToken jwtToken)
+            return null;
+
+        if (!jwtToken.Header.Alg.Equals(
+            SecurityAlgorithms.HmacSha256,
+            StringComparison.InvariantCultureIgnoreCase))
+            return null;
+
+        return principal;
+    }
+    catch
+    {
+        return null;
+    }
+  }
 }

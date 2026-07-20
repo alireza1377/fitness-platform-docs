@@ -12,9 +12,12 @@ public interface IRefreshTokenRepository
         string tokenHash,
         CancellationToken cancellationToken = default);
 
-    void Update(
-        RefreshToken refreshToken);
+   
 
     Task SaveChangesAsync(
         CancellationToken cancellationToken = default);
+        
+       
+void Update(
+    RefreshToken refreshToken);
 }

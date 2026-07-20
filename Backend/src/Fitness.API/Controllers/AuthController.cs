@@ -9,53 +9,39 @@ namespace Fitness.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IOtpService _otpService;
-    private readonly IAuthService _authService;
 
-    public AuthController(
-        IOtpService otpService,
-        IAuthService authService)
+    public AuthController(IOtpService otpService)
     {
         _otpService = otpService;
-        _authService = authService;
     }
 
     [HttpPost("send-otp")]
-public async Task<IActionResult> SendOtp(
-    [FromBody] SendOtpRequest request,
+    public async Task<IActionResult> SendOtp(
+        [FromBody] SendOtpRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _otpService.SendOtpAsync(
+            request.PhoneNumber,
+            cancellationToken);
+
+        return Ok(new
+        {
+            Message = "OTP sent successfully."
+        });
+    }
+    [HttpPost("verify-otp")]
+public async Task<IActionResult> VerifyOtp(
+    [FromBody] VerifyOtpRequest request,
     CancellationToken cancellationToken)
 {
-    await _authService.SendOtpAsync(
+    await _otpService.VerifyOtpAsync(
         request.PhoneNumber,
+        request.Code,
         cancellationToken);
 
     return Ok(new
     {
-        message = "OTP sent successfully."
+        Message = "OTP verified successfully."
     });
 }
-
-    [HttpPost("verify-otp")]
-    public async Task<ActionResult<LoginResponse>> VerifyOtp(
-        [FromBody] VerifyOtpRequest request,
-        CancellationToken cancellationToken)
-    {
-        var response =
-            await _authService.VerifyOtpAsync(
-                request.PhoneNumber,
-                request.Code,
-                cancellationToken);
-
-        return Ok(response);
-    }
-
-    [HttpPost("guest")]
-    public async Task<ActionResult<LoginResponse>> GuestLogin(
-        CancellationToken cancellationToken)
-    {
-        var response =
-            await _authService.GuestLoginAsync(
-                cancellationToken);
-
-        return Ok(response);
-    }
 }

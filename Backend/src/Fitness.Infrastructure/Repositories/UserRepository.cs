@@ -37,4 +37,20 @@ public class UserRepository : IUserRepository
     {
         await _context.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task<User?> GetByIdAsync(
+    Guid id,
+    CancellationToken cancellationToken = default)
+{
+    return await _context.Users
+        .FirstOrDefaultAsync(
+            x => x.Id == id,
+            cancellationToken);
+}
+
+public void Update(User user)
+{
+    _context.Users.Update(user);
+}
+
 }

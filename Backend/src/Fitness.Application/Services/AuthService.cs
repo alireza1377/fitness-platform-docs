@@ -150,12 +150,64 @@ public class AuthService : IAuthService
 
 
 
-    public async Task<LoginResponse> RefreshTokenAsync(
-        string refreshToken,
-        CancellationToken cancellationToken = default)
+   public async Task<LoginResponse> RefreshTokenAsync(
+    string refreshToken,
+    CancellationToken cancellationToken = default)
+{
+    var hash = RefreshTokenHasher.Hash(refreshToken);
+
+    var storedToken =
+        await _refreshTokenRepository.GetByTokenHashAsync(
+            hash,
+            cancellationToken);
+
+    if (storedToken is null)
+        throw new Exception("Refresh token is invalid.");
+
+    if (storedToken.IsExpired())
+        throw new Exception("Refresh token expired.");
+
+    if (storedToken.IsRevoked())
+        throw new Exception("Refresh token revoked.");
+
+    storedToken.Revoke();
+
+    _refreshTokenRepository.Update(storedToken);
+
+    var user = storedToken.User;
+
+    var newAccessToken =
+        _jwtService.GenerateAccessToken(user);
+
+    var newRefreshToken =
+        _jwtService.GenerateRefreshToken();
+
+    var newEntity = new RefreshToken(
+        user.Id,
+        RefreshTokenHasher.Hash(newRefreshToken),
+        Guid.NewGuid().ToString(),
+        DateTime.UtcNow.AddDays(30));
+
+    await _refreshTokenRepository.AddAsync(
+        newEntity,
+        cancellationToken);
+
+    await _refreshTokenRepository.SaveChangesAsync(
+        cancellationToken);
+
+    return new LoginResponse
     {
-        throw new NotImplementedException();
-    }
+        AccessToken = newAccessToken,
+        RefreshToken = newRefreshToken,
+        ExpiresIn = 3600,
+        User = new UserDto
+        {
+            Id = user.Id,
+            PhoneNumber = user.PhoneNumber,
+            IsGuest = false
+        }
+    };
+}
 
 
 
@@ -186,4 +238,27 @@ public class AuthService : IAuthService
                 }
             });
     }
+    public async Task LogoutAsync(
+    string refreshToken,
+    CancellationToken cancellationToken = default)
+{
+    var hash = RefreshTokenHasher.Hash(refreshToken);
+
+    var token = await _refreshTokenRepository.GetByTokenHashAsync(
+        hash,
+        cancellationToken);
+
+    if (token is null)
+        return;
+
+    if (!token.IsRevoked())
+    {
+        token.Revoke();
+
+        _refreshTokenRepository.Update(token);
+
+        await _refreshTokenRepository.SaveChangesAsync(
+            cancellationToken);
+    }
+}
 }

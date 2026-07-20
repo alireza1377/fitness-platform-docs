@@ -14,8 +14,10 @@ public class RedisOtpService : IOtpService
 
     private static readonly TimeSpan OtpLifetime = TimeSpan.FromMinutes(5);
     private static readonly TimeSpan OtpCooldown = TimeSpan.FromSeconds(60);
+    private static readonly TimeSpan OtpHourlyWindow = TimeSpan.FromHours(1);
 
     private const int MaxFailedAttempts = 5;
+    private const int MaxOtpPerHour = 5;
 
     public RedisOtpService(
         IDistributedCache cache,
@@ -31,8 +33,22 @@ public class RedisOtpService : IOtpService
     {
         var key = $"otp:{phoneNumber}";
         var cooldownKey = $"otp:cooldown:{phoneNumber}";
+        var rateLimitKey = $"otp:rate:{phoneNumber}";
 
-        // جلوگیری از ارسال پشت سر هم OTP
+        // محدودیت ۵ درخواست در ساعت
+        var countText = await _cache.GetStringAsync(
+            rateLimitKey,
+            cancellationToken);
+
+        var count = 0;
+
+        if (!string.IsNullOrWhiteSpace(countText))
+            count = int.Parse(countText);
+
+        if (count >= MaxOtpPerHour)
+            throw new Exception("حداکثر ۵ درخواست OTP در یک ساعت مجاز است.");
+
+        // جلوگیری از ارسال پشت سر هم
         var cooldownExists = await _cache.GetStringAsync(
             cooldownKey,
             cancellationToken);
@@ -40,6 +56,7 @@ public class RedisOtpService : IOtpService
         if (!string.IsNullOrWhiteSpace(cooldownExists))
             throw new OtpAlreadySentException();
 
+        // تولید OTP
         var otp = OtpGenerator.Generate();
 
         var model = new OtpCacheModel
@@ -68,6 +85,18 @@ public class RedisOtpService : IOtpService
             new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = OtpCooldown
+            },
+            cancellationToken);
+
+        // افزایش شمارنده درخواست‌ها
+        count++;
+
+        await _cache.SetStringAsync(
+            rateLimitKey,
+            count.ToString(),
+            new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = OtpHourlyWindow
             },
             cancellationToken);
 
@@ -112,7 +141,7 @@ public class RedisOtpService : IOtpService
 
         var hash = OtpHasher.Hash(code);
 
-        // کد اشتباه است
+        // کد اشتباه
         if (hash != model.CodeHash)
         {
             model.FailedAttempts++;
@@ -128,7 +157,6 @@ public class RedisOtpService : IOtpService
 
             var updatedJson = JsonSerializer.Serialize(model);
 
-            // ذخیره مجدد بدون تمدید زمان OTP
             await _cache.SetStringAsync(
                 key,
                 updatedJson,
@@ -141,7 +169,7 @@ public class RedisOtpService : IOtpService
             throw new InvalidOtpException();
         }
 
-        // OTP صحیح بود
+        // OTP صحیح
         await _cache.RemoveAsync(
             key,
             cancellationToken);

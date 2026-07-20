@@ -1,7 +1,7 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Fitness.Application.Interfaces;
 using Microsoft.AspNetCore.Http;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace Fitness.Infrastructure.Services;
 
@@ -18,9 +18,25 @@ public class CurrentUserService : ICurrentUserService
     {
         get
         {
-           var value = _httpContextAccessor.HttpContext?
-    .User?
-    .FindFirstValue(JwtRegisteredClaimNames.Sub);
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (user is null)
+                return null;
+
+            // برای دیباگ
+            Console.WriteLine("========== JWT CLAIMS ==========");
+            foreach (var claim in user.Claims)
+            {
+                Console.WriteLine($"{claim.Type} = {claim.Value}");
+            }
+            Console.WriteLine("================================");
+
+            var value = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                value = user.FindFirstValue(JwtRegisteredClaimNames.Sub);
+            }
 
             if (Guid.TryParse(value, out var id))
                 return id;

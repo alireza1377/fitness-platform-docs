@@ -6,19 +6,22 @@ namespace Fitness.Application.Services;
 
 public class ProgressService : IProgressService
 {
-    private readonly IProgramVideoRepository _videoRepository;
-    private readonly IUserVideoProgressRepository _videoProgressRepository;
-    private readonly IUserProgramProgressRepository _programProgressRepository;
+   private readonly IProgramVideoRepository _videoRepository;
+private readonly IUserVideoProgressRepository _videoProgressRepository;
+private readonly IUserProgramProgressRepository _programProgressRepository;
+private readonly IStatisticsService _statisticsService;
 
-    public ProgressService(
-        IProgramVideoRepository videoRepository,
-        IUserVideoProgressRepository videoProgressRepository,
-        IUserProgramProgressRepository programProgressRepository)
-    {
-        _videoRepository = videoRepository;
-        _videoProgressRepository = videoProgressRepository;
-        _programProgressRepository = programProgressRepository;
-    }
+   public ProgressService(
+    IProgramVideoRepository videoRepository,
+    IUserVideoProgressRepository videoProgressRepository,
+    IUserProgramProgressRepository programProgressRepository,
+    IStatisticsService statisticsService)
+{
+    _videoRepository = videoRepository;
+    _videoProgressRepository = videoProgressRepository;
+    _programProgressRepository = programProgressRepository;
+    _statisticsService = statisticsService;
+}
 
     public async Task<ProgramProgressDto> GetProgressAsync(
         Guid userId,
@@ -40,10 +43,9 @@ public class ProgressService : IProgressService
 
         if (totalVideos > 0)
         {
-            percentage =
-                Math.Round(
-                    (double)completedVideos / totalVideos * 100,
-                    2);
+            percentage = Math.Round(
+                (double)completedVideos / totalVideos * 100,
+                2);
         }
 
         return new ProgramProgressDto
@@ -61,39 +63,180 @@ public class ProgressService : IProgressService
         Guid programId,
         CancellationToken cancellationToken = default)
     {
-        var progress =
-            await _programProgressRepository.GetAsync(
-                userId,
-                programId,
-                cancellationToken);
+        var progress = await GetOrCreateProgramProgressAsync(
+            userId,
+            programId,
+            cancellationToken);
 
-        if (progress is null)
-        {
-           var totalVideos = await _videoRepository.CountAsync(
-    programId,
-    cancellationToken);
+        progress.MarkCompleted();
 
-progress = new UserProgramProgress(
-    userId,
-    programId,
-    totalVideos);
-
-            progress.MarkCompleted();
-
-            await _programProgressRepository.AddAsync(
-                progress,
-                cancellationToken);
-        }
-        else
-        {
-            progress.MarkCompleted();
-
-            await _programProgressRepository.UpdateAsync(
-                progress,
-                cancellationToken);
-        }
+        await _programProgressRepository.UpdateAsync(
+            progress,
+            cancellationToken);
 
         await _programProgressRepository.SaveChangesAsync(
             cancellationToken);
+    }
+
+    public async Task CompleteVideoAsync(
+        Guid userId,
+        Guid videoId,
+        CancellationToken cancellationToken = default)
+    {
+        // پیدا کردن ویدئو
+        var video = await _videoRepository.GetByIdAsync(
+            videoId,
+            cancellationToken);
+
+        if (video is null)
+            throw new Exception("Video not found.");
+
+        // دریافت یا ایجاد Progress ویدئو
+        var progress = await GetOrCreateVideoProgressAsync(
+            userId,
+            video.Id,
+            cancellationToken);
+
+        // اگر قبلاً کامل شده بود، ادامه نده
+        if (!progress.MarkCompleted())
+            return;
+
+        await _videoProgressRepository.UpdateAsync(
+            progress,
+            cancellationToken);
+
+        // دریافت یا ایجاد Progress برنامه
+        var programProgress = await GetOrCreateProgramProgressAsync(
+            userId,
+            video.FitnessProgramId,
+            cancellationToken);
+
+        // محاسبه تعداد ویدئوهای تکمیل شده
+        var completedVideos =
+            await _videoProgressRepository.CountCompletedVideosAsync(
+                userId,
+                video.FitnessProgramId,
+                cancellationToken);
+
+        // بروزرسانی درصد پیشرفت برنامه
+        programProgress.Update(completedVideos);
+
+        await _programProgressRepository.UpdateAsync(
+            programProgress,
+            cancellationToken);
+
+        // ذخیره تغییرات
+        await _videoProgressRepository.SaveChangesAsync(
+            cancellationToken);
+
+        await _programProgressRepository.SaveChangesAsync(
+            cancellationToken);
+
+            await _statisticsService.AddWorkoutAsync(
+    userId,
+    (int)Math.Ceiling(video.Duration.TotalMinutes),
+    videoCompleted: true,
+    programCompleted: programProgress.IsCompleted,
+    cancellationToken);
+    }
+
+  public async Task UpdateVideoPositionAsync(
+    Guid userId,
+    Guid videoId,
+    int currentPositionSeconds,
+    CancellationToken cancellationToken = default)
+{
+    var video = await _videoRepository.GetByIdAsync(
+        videoId,
+        cancellationToken);
+
+    if (video is null)
+        throw new Exception("Video not found.");
+
+    var progress = await _videoProgressRepository.GetAsync(
+        userId,
+        videoId,
+        cancellationToken);
+
+
+    if (progress is null)
+    {
+        progress = new UserVideoProgress(
+            userId,
+            videoId);
+
+        progress.UpdateProgress(
+            currentPositionSeconds);
+
+        await _videoProgressRepository.AddAsync(
+            progress,
+            cancellationToken);
+    }
+    else
+    {
+        progress.UpdateProgress(
+            currentPositionSeconds);
+
+        await _videoProgressRepository.UpdateAsync(
+            progress,
+            cancellationToken);
+    }
+
+
+    await _videoProgressRepository.SaveChangesAsync(
+        cancellationToken);
+}
+
+    private async Task<UserProgramProgress> GetOrCreateProgramProgressAsync(
+        Guid userId,
+        Guid programId,
+        CancellationToken cancellationToken)
+    {
+        var progress = await _programProgressRepository.GetAsync(
+            userId,
+            programId,
+            cancellationToken);
+
+        if (progress is not null)
+            return progress;
+
+        var totalVideos = await _videoRepository.CountAsync(
+            programId,
+            cancellationToken);
+
+        progress = new UserProgramProgress(
+            userId,
+            programId,
+            totalVideos);
+
+        await _programProgressRepository.AddAsync(
+            progress,
+            cancellationToken);
+
+        return progress;
+    }
+
+    private async Task<UserVideoProgress> GetOrCreateVideoProgressAsync(
+        Guid userId,
+        Guid videoId,
+        CancellationToken cancellationToken)
+    {
+        var progress = await _videoProgressRepository.GetAsync(
+            userId,
+            videoId,
+            cancellationToken);
+
+        if (progress is not null)
+            return progress;
+
+        progress = new UserVideoProgress(
+            userId,
+            videoId);
+
+        await _videoProgressRepository.AddAsync(
+            progress,
+            cancellationToken);
+
+        return progress;
     }
 }

@@ -45,4 +45,35 @@ public async Task<int> CountAsync(
             x => x.FitnessProgramId == programId,
             cancellationToken);
 }
+
+public async Task<Guid?> GetProgramIdByVideoIdAsync(
+    Guid videoId,
+    CancellationToken cancellationToken = default)
+{
+    return await _context.ProgramVideos
+        .Where(x => x.Id == videoId)
+        .Select(x => (Guid?)x.FitnessProgramId)
+        .FirstOrDefaultAsync(cancellationToken);
+}
+
+public async Task<int> GetDurationInMinutesAsync(
+    Guid videoId,
+    CancellationToken cancellationToken = default)
+{
+    return await _context.ProgramVideos
+        .Where(x => x.Id == videoId)
+        .Select(x => (int)Math.Ceiling(x.Duration.TotalMinutes))
+        .FirstAsync(cancellationToken);
+}
+
+public async Task<ProgramVideo?> GetWithProgramAsync(
+    Guid videoId,
+    CancellationToken cancellationToken = default)
+{
+    return await _context.ProgramVideos
+        .Include(x => x.FitnessProgram)
+        .FirstOrDefaultAsync(
+            x => x.Id == videoId,
+            cancellationToken);
+}
 }

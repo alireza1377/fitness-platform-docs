@@ -15,4 +15,15 @@ public interface IProgramVideoRepository
     Task<int> CountAsync(
         Guid programId,
         CancellationToken cancellationToken = default);
+
+        Task<Guid?> GetProgramIdByVideoIdAsync(
+    Guid videoId,
+    CancellationToken cancellationToken = default);
+
+    Task<int> GetDurationInMinutesAsync(
+    Guid videoId,
+    CancellationToken cancellationToken = default);
+    Task<ProgramVideo?> GetWithProgramAsync(
+    Guid videoId,
+    CancellationToken cancellationToken = default);
 }

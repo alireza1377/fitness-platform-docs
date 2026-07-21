@@ -13,4 +13,15 @@ public interface IProgressService
         Guid userId,
         Guid programId,
         CancellationToken cancellationToken = default);
+
+        Task CompleteVideoAsync(
+    Guid userId,
+    Guid videoId,
+    CancellationToken cancellationToken = default);
+
+Task UpdateVideoPositionAsync(
+    Guid userId,
+    Guid videoId,
+    int currentPositionSeconds,
+    CancellationToken cancellationToken = default);
 }

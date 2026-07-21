@@ -1,3 +1,4 @@
+using Fitness.Application.DTOs.Progress;
 using Fitness.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,7 @@ public class ProgressController : ControllerBase
         _currentUserService = currentUserService;
     }
 
-    [HttpGet("{programId:guid}")]
+    [HttpGet("programs/{programId:guid}")]
     public async Task<IActionResult> GetProgress(
         Guid programId,
         CancellationToken cancellationToken)
@@ -36,7 +37,7 @@ public class ProgressController : ControllerBase
         return Ok(progress);
     }
 
-    [HttpPost("{programId:guid}/complete")]
+    [HttpPost("programs/{programId:guid}/complete")]
     public async Task<IActionResult> CompleteProgram(
         Guid programId,
         CancellationToken cancellationToken)
@@ -53,5 +54,42 @@ public class ProgressController : ControllerBase
         {
             Message = "Program completed successfully."
         });
+    }
+
+    [HttpPost("videos/{videoId:guid}/complete")]
+    public async Task<IActionResult> CompleteVideo(
+        Guid videoId,
+        CancellationToken cancellationToken)
+    {
+        if (_currentUserService.UserId is null)
+            return Unauthorized();
+
+        await _progressService.CompleteVideoAsync(
+            _currentUserService.UserId.Value,
+            videoId,
+            cancellationToken);
+
+        return Ok(new
+        {
+            Message = "Video completed successfully."
+        });
+    }
+
+    [HttpPut("videos/{videoId:guid}/position")]
+    public async Task<IActionResult> UpdateVideoPosition(
+        Guid videoId,
+        [FromBody] UpdateVideoPositionRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (_currentUserService.UserId is null)
+            return Unauthorized();
+
+        await _progressService.UpdateVideoPositionAsync(
+            _currentUserService.UserId.Value,
+            videoId,
+            request.CurrentPositionSeconds,
+            cancellationToken);
+
+        return NoContent();
     }
 }

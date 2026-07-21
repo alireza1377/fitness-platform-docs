@@ -40,7 +40,7 @@ public class UserVideoProgressRepository : IUserVideoProgressRepository
         UserVideoProgress progress,
         CancellationToken cancellationToken = default)
     {
-        _context.UserVideoProgresses.Update(progress);
+        
         return Task.CompletedTask;
     }
 

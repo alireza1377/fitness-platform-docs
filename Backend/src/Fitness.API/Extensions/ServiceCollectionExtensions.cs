@@ -67,11 +67,13 @@ public static class ServiceCollectionExtensions
         
         services.AddScoped<IProgressService, ProgressService>();
 
+        services.AddScoped<IStatisticsService, StatisticsService>();
+
         services.AddScoped<IDashboardService, DashboardService>();
         
         services.AddScoped<IUserStatisticsRepository, UserStatisticsRepository>();
 
-        
+        services.AddScoped<IStatisticsService, StatisticsService>();
         return services;
     }
 }

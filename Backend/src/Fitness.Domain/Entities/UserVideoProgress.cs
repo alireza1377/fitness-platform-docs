@@ -44,12 +44,17 @@ public class UserVideoProgress : AuditableEntity
         SetUpdated();
     }
 
-    public void MarkCompleted()
-    {
-        Completed = true;
-        CompletedAt = DateTime.UtcNow;
-        LastWatchAt = DateTime.UtcNow;
+   public bool MarkCompleted()
+{
+    if (Completed)
+        return false;
 
-        SetUpdated();
-    }
+    Completed = true;
+    CompletedAt = DateTime.UtcNow;
+    LastWatchAt = DateTime.UtcNow;
+
+    SetUpdated();
+
+    return true;
+}
 }

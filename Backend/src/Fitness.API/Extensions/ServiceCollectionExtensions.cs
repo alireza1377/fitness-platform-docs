@@ -30,26 +30,41 @@ public static class ServiceCollectionExtensions
         // HttpClient
         services.AddHttpClient<ISmsService, SmsService>();
 
+        // ==========================
         // Repositories
+        // ==========================
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IAuthIdentityRepository, AuthIdentityRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
-services.AddScoped<ICategoryRepository, CategoryRepository>();
-services.AddScoped<IFitnessProgramRepository, FitnessProgramRepository>();
-services.AddScoped<IProgramVideoRepository, ProgramVideoRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<IFitnessProgramRepository, FitnessProgramRepository>();
+        services.AddScoped<IProgramVideoRepository, ProgramVideoRepository>();
+        services.AddScoped<IUserVideoProgressRepository, UserVideoProgressRepository>();
 
-        // Services
+        // ==========================
+        // Application Services
+        // ==========================
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IOtpService, RedisOtpService>();
-        services.AddScoped<ISmsService, SmsService>();
+        
+
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IProfileService, ProfileService>();
 
+        services.AddScoped<IContentService, ContentService>();
+        services.AddScoped<IVideoPlayerService, VideoPlayerService>();
+
+        // ==========================
         // Current User
+        // ==========================
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
 
+        services.AddScoped<
+        IUserProgramProgressRepository,
+        UserProgramProgressRepository>();
+        
         return services;
     }
 }

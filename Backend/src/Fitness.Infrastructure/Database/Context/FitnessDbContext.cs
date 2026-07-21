@@ -9,7 +9,8 @@ public class FitnessDbContext : DbContext
         : base(options)
     {
     }
-
+public DbSet<UserVideoProgress> UserVideoProgresses =>
+    Set<UserVideoProgress>();
     public DbSet<User> Users => Set<User>();
 
     public DbSet<AuthIdentity> AuthIdentities => Set<AuthIdentity>();
@@ -21,6 +22,8 @@ public class FitnessDbContext : DbContext
     public DbSet<FitnessProgram> FitnessPrograms => Set<FitnessProgram>();
 
     public DbSet<ProgramVideo> ProgramVideos => Set<ProgramVideo>();
+
+public DbSet<UserProgramProgress> UserProgramProgresses => Set<UserProgramProgress>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -50,5 +53,28 @@ public class FitnessDbContext : DbContext
                 x.Order
             })
             .IsUnique();
+            
+            // User -> Video Progress
+modelBuilder.Entity<UserVideoProgress>()
+    .HasOne(x => x.User)
+    .WithMany()
+    .HasForeignKey(x => x.UserId)
+    .OnDelete(DeleteBehavior.Cascade);
+
+// ProgramVideo -> Progresses
+modelBuilder.Entity<UserVideoProgress>()
+    .HasOne(x => x.ProgramVideo)
+    .WithMany(x => x.Progresses)
+    .HasForeignKey(x => x.ProgramVideoId)
+    .OnDelete(DeleteBehavior.Cascade);
+
+// هر کاربر برای هر ویدئو فقط یک رکورد پیشرفت داشته باشد
+modelBuilder.Entity<UserVideoProgress>()
+    .HasIndex(x => new
+    {
+        x.UserId,
+        x.ProgramVideoId
+    })
+    .IsUnique();
     }
 }

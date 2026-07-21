@@ -2,17 +2,17 @@ using Fitness.Domain.Entities;
 
 namespace Fitness.Application.Interfaces;
 
-public interface IProgramVideoRepository
+public interface IUserProgramProgressRepository
 {
-    Task<List<ProgramVideo>> GetByProgramAsync(
-        Guid fitnessProgramId,
-        CancellationToken cancellationToken = default);
-
-    Task<ProgramVideo?> GetByIdAsync(
-        Guid id,
-        CancellationToken cancellationToken = default);
-
-    Task<int> CountAsync(
+    Task<UserProgramProgress?> GetAsync(
+        Guid userId,
         Guid programId,
+        CancellationToken cancellationToken = default);
+
+    Task AddAsync(
+        UserProgramProgress progress,
+        CancellationToken cancellationToken = default);
+
+    Task SaveChangesAsync(
         CancellationToken cancellationToken = default);
 }

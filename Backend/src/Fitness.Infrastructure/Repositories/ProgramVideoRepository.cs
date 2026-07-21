@@ -1,7 +1,3 @@
-// =========================
-// ProgramVideoRepository.cs
-// =========================
-
 using Fitness.Application.Interfaces;
 using Fitness.Domain.Entities;
 using Fitness.Infrastructure.Database.Context;
@@ -18,6 +14,16 @@ public class ProgramVideoRepository : IProgramVideoRepository
         _context = context;
     }
 
+    public async Task<ProgramVideo?> GetByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.ProgramVideos
+            .FirstOrDefaultAsync(
+                x => x.Id == id,
+                cancellationToken);
+    }
+
     public async Task<List<ProgramVideo>> GetByProgramAsync(
         Guid fitnessProgramId,
         CancellationToken cancellationToken = default)
@@ -27,4 +33,16 @@ public class ProgramVideoRepository : IProgramVideoRepository
             .OrderBy(x => x.Order)
             .ToListAsync(cancellationToken);
     }
+
+   
+
+public async Task<int> CountAsync(
+    Guid programId,
+    CancellationToken cancellationToken = default)
+{
+    return await _context.ProgramVideos
+        .CountAsync(
+            x => x.FitnessProgramId == programId,
+            cancellationToken);
+}
 }

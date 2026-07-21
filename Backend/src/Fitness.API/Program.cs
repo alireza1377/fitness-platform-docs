@@ -5,6 +5,8 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Fitness.Infrastructure.Database;
+using Fitness.Infrastructure.Database.Context;
 var builder = WebApplication.CreateBuilder(args);
 
 // Database
@@ -14,7 +16,7 @@ builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddRedis(builder.Configuration);
 
 // Dependency Injection
-builder.Services.AddApplicationServices();
+
 
 // JWT Authentication
 builder.Services.AddJwtAuthentication(builder.Configuration);
@@ -74,6 +76,12 @@ builder.Services.AddFluentValidationAutoValidation();
 // Build
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<FitnessDbContext>();
+
+    await DatabaseSeeder.SeedAsync(db);
+}
 // Middleware
 if (app.Environment.IsDevelopment())
 {

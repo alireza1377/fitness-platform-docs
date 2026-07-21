@@ -3,6 +3,7 @@ using System;
 using Fitness.Infrastructure.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Fitness.Infrastructure.Migrations
 {
     [DbContext(typeof(FitnessDbContext))]
-    partial class FitnessDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260721075857_AddContentModule")]
+    partial class AddContentModule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -323,81 +326,6 @@ namespace Fitness.Infrastructure.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("Fitness.Domain.Entities.UserProgramProgress", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("CompletedVideos")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("FitnessProgramId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<double>("Percentage")
-                        .HasColumnType("double precision");
-
-                    b.Property<int>("TotalVideos")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UserProgramProgresses");
-                });
-
-            modelBuilder.Entity("Fitness.Domain.Entities.UserVideoProgress", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("Completed")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("CompletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CurrentPositionSeconds")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("LastWatchAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("ProgramVideoId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProgramVideoId");
-
-                    b.HasIndex("UserId", "ProgramVideoId")
-                        .IsUnique();
-
-                    b.ToTable("UserVideoProgresses");
-                });
-
             modelBuilder.Entity("Fitness.Domain.Entities.AuthIdentity", b =>
                 {
                     b.HasOne("Fitness.Domain.Entities.User", "User")
@@ -442,25 +370,6 @@ namespace Fitness.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Fitness.Domain.Entities.UserVideoProgress", b =>
-                {
-                    b.HasOne("Fitness.Domain.Entities.ProgramVideo", "ProgramVideo")
-                        .WithMany("Progresses")
-                        .HasForeignKey("ProgramVideoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Fitness.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ProgramVideo");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Fitness.Domain.Entities.Category", b =>
                 {
                     b.Navigation("Programs");
@@ -469,11 +378,6 @@ namespace Fitness.Infrastructure.Migrations
             modelBuilder.Entity("Fitness.Domain.Entities.FitnessProgram", b =>
                 {
                     b.Navigation("Videos");
-                });
-
-            modelBuilder.Entity("Fitness.Domain.Entities.ProgramVideo", b =>
-                {
-                    b.Navigation("Progresses");
                 });
 
             modelBuilder.Entity("Fitness.Domain.Entities.User", b =>

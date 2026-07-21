@@ -65,6 +65,13 @@ public static class ServiceCollectionExtensions
         IUserProgramProgressRepository,
         UserProgramProgressRepository>();
         
+        services.AddScoped<IProgressService, ProgressService>();
+
+        services.AddScoped<IDashboardService, DashboardService>();
+        
+        services.AddScoped<IUserStatisticsRepository, UserStatisticsRepository>();
+
+        
         return services;
     }
 }

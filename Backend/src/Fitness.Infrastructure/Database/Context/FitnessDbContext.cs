@@ -9,8 +9,7 @@ public class FitnessDbContext : DbContext
         : base(options)
     {
     }
-public DbSet<UserVideoProgress> UserVideoProgresses =>
-    Set<UserVideoProgress>();
+
     public DbSet<User> Users => Set<User>();
 
     public DbSet<AuthIdentity> AuthIdentities => Set<AuthIdentity>();
@@ -23,7 +22,15 @@ public DbSet<UserVideoProgress> UserVideoProgresses =>
 
     public DbSet<ProgramVideo> ProgramVideos => Set<ProgramVideo>();
 
-public DbSet<UserProgramProgress> UserProgramProgresses => Set<UserProgramProgress>();
+    public DbSet<UserProgramProgress> UserProgramProgresses =>
+        Set<UserProgramProgress>();
+
+public DbSet<UserStatistics> UserStatistics =>
+    Set<UserStatistics>();
+
+
+    public DbSet<UserVideoProgress> UserVideoProgresses =>
+        Set<UserVideoProgress>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -31,21 +38,26 @@ public DbSet<UserProgramProgress> UserProgramProgresses => Set<UserProgramProgre
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(FitnessDbContext).Assembly);
 
-        // Category -> FitnessPrograms
+        //----------------------------------------------------
+        // Category -> Programs
+        //----------------------------------------------------
+
         modelBuilder.Entity<Category>()
             .HasMany(x => x.Programs)
             .WithOne(x => x.Category)
             .HasForeignKey(x => x.CategoryId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // FitnessProgram -> Videos
+        //----------------------------------------------------
+        // Program -> Videos
+        //----------------------------------------------------
+
         modelBuilder.Entity<FitnessProgram>()
             .HasMany(x => x.Videos)
             .WithOne(x => x.FitnessProgram)
             .HasForeignKey(x => x.FitnessProgramId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // ترتیب ویدئوها داخل هر برنامه باید یکتا باشد
         modelBuilder.Entity<ProgramVideo>()
             .HasIndex(x => new
             {
@@ -53,28 +65,59 @@ public DbSet<UserProgramProgress> UserProgramProgresses => Set<UserProgramProgre
                 x.Order
             })
             .IsUnique();
-            
-            // User -> Video Progress
-modelBuilder.Entity<UserVideoProgress>()
+
+        //----------------------------------------------------
+        // User -> Video Progress
+        //----------------------------------------------------
+
+        modelBuilder.Entity<UserVideoProgress>()
+            .HasOne(x => x.User)
+            .WithMany(x => x.VideoProgresses)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<UserVideoProgress>()
+            .HasOne(x => x.ProgramVideo)
+            .WithMany(x => x.Progresses)
+            .HasForeignKey(x => x.ProgramVideoId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<UserVideoProgress>()
+            .HasIndex(x => new
+            {
+                x.UserId,
+                x.ProgramVideoId
+            })
+            .IsUnique();
+
+
+modelBuilder.Entity<UserStatistics>()
     .HasOne(x => x.User)
-    .WithMany()
-    .HasForeignKey(x => x.UserId)
+    .WithOne(x => x.Statistics)
+    .HasForeignKey<UserStatistics>(x => x.UserId)
     .OnDelete(DeleteBehavior.Cascade);
+        //----------------------------------------------------
+        // User -> Program Progress
+        //----------------------------------------------------
 
-// ProgramVideo -> Progresses
-modelBuilder.Entity<UserVideoProgress>()
-    .HasOne(x => x.ProgramVideo)
-    .WithMany(x => x.Progresses)
-    .HasForeignKey(x => x.ProgramVideoId)
-    .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<UserProgramProgress>()
+            .HasOne(x => x.User)
+            .WithMany(x => x.ProgramProgresses)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-// هر کاربر برای هر ویدئو فقط یک رکورد پیشرفت داشته باشد
-modelBuilder.Entity<UserVideoProgress>()
-    .HasIndex(x => new
-    {
-        x.UserId,
-        x.ProgramVideoId
-    })
-    .IsUnique();
+        modelBuilder.Entity<UserProgramProgress>()
+            .HasOne(x => x.FitnessProgram)
+            .WithMany(x => x.UserProgresses)
+            .HasForeignKey(x => x.FitnessProgramId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<UserProgramProgress>()
+            .HasIndex(x => new
+            {
+                x.UserId,
+                x.FitnessProgramId
+            })
+            .IsUnique();
     }
 }

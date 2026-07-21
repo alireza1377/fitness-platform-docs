@@ -15,4 +15,17 @@ public interface IUserProgramProgressRepository
 
     Task SaveChangesAsync(
         CancellationToken cancellationToken = default);
+        
+        Task UpdateAsync(
+    UserProgramProgress progress,
+    CancellationToken cancellationToken = default);
+
+    Task<List<UserProgramProgress>> GetByUserAsync(
+    Guid userId,
+    CancellationToken cancellationToken = default);
+
+Task<int> CountCompletedAsync(
+    Guid userId,
+    CancellationToken cancellationToken = default);
+    
 }

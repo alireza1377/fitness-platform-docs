@@ -20,8 +20,12 @@ public interface IUserVideoProgressRepository
     Task SaveChangesAsync(
         CancellationToken cancellationToken = default);
 
-        Task<int> CountCompletedVideosAsync(
-    Guid userId,
-    Guid programId,
-    CancellationToken cancellationToken = default);
+    Task<int> CountCompletedVideosAsync(
+        Guid userId,
+        Guid programId,
+        CancellationToken cancellationToken = default);
+
+    Task<UserVideoProgress?> GetLastWatchedAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default);
 }

@@ -11,4 +11,7 @@ public interface IFitnessProgramRepository
     Task<FitnessProgram?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default);
+
+        Task<List<FitnessProgram>> GetAllAsync(
+    CancellationToken cancellationToken = default);
 }

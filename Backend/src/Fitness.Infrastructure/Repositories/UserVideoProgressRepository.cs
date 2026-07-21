@@ -36,33 +36,42 @@ public class UserVideoProgressRepository : IUserVideoProgressRepository
             cancellationToken);
     }
 
- 
+    public Task UpdateAsync(
+        UserVideoProgress progress,
+        CancellationToken cancellationToken = default)
+    {
+        _context.UserVideoProgresses.Update(progress);
+        return Task.CompletedTask;
+    }
+
     public async Task SaveChangesAsync(
         CancellationToken cancellationToken = default)
     {
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-   public Task UpdateAsync(
-    UserVideoProgress progress,
-    CancellationToken cancellationToken = default)
-{
-    _context.UserVideoProgresses.Update(progress);
+    public async Task<int> CountCompletedVideosAsync(
+        Guid userId,
+        Guid programId,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.UserVideoProgresses
+            .CountAsync(
+                x =>
+                    x.UserId == userId &&
+                    x.ProgramVideo.FitnessProgramId == programId &&
+                    x.Completed,
+                cancellationToken);
+    }
 
-    return Task.CompletedTask;
-}
-
-public async Task<int> CountCompletedVideosAsync(
-    Guid userId,
-    Guid programId,
-    CancellationToken cancellationToken = default)
-{
-    return await _context.UserVideoProgresses
-        .CountAsync(
-            x =>
-                x.UserId == userId &&
-                x.ProgramVideo.FitnessProgramId == programId &&
-                x.Completed,
-            cancellationToken);
-}
+    public async Task<UserVideoProgress?> GetLastWatchedAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.UserVideoProgresses
+            .Include(x => x.ProgramVideo)
+            .Where(x => x.UserId == userId)
+            .OrderByDescending(x => x.LastWatchAt)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
 }

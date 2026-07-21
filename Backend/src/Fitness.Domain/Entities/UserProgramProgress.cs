@@ -16,6 +16,10 @@ public class UserProgramProgress : AuditableEntity
 
     public bool IsCompleted { get; private set; }
 
+    public User User { get; private set; } = null!;
+
+public FitnessProgram FitnessProgram { get; private set; } = null!;
+
     private UserProgramProgress()
     {
     }
@@ -30,6 +34,15 @@ public class UserProgramProgress : AuditableEntity
         TotalVideos = totalVideos;
     }
 
+    public void MarkCompleted()
+    {
+        CompletedVideos = TotalVideos;
+        Percentage = 100;
+        IsCompleted = true;
+
+        SetUpdated();
+    }
+
     public void Update(int completedVideos)
     {
         CompletedVideos = completedVideos;
@@ -39,8 +52,7 @@ public class UserProgramProgress : AuditableEntity
                 ? 0
                 : completedVideos * 100.0 / TotalVideos;
 
-        IsCompleted =
-            completedVideos >= TotalVideos;
+        IsCompleted = completedVideos >= TotalVideos;
 
         SetUpdated();
     }

@@ -38,5 +38,14 @@ public class FitnessProgramRepository : IFitnessProgramRepository
             .FirstOrDefaultAsync(
                 x => x.Id == id,
                 cancellationToken);
+                
     }
+    public async Task<List<FitnessProgram>> GetAllAsync(
+    CancellationToken cancellationToken = default)
+{
+    return await _context.FitnessPrograms
+        .Include(x => x.Category)
+        .Include(x => x.Videos)
+        .ToListAsync(cancellationToken);
+}
 }

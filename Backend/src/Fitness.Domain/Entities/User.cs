@@ -33,6 +33,14 @@ public class User : AuditableEntity
 
     public DateTime? LastLoginAt { get; private set; }
 
+public UserStatistics? Statistics { get; private set; }
+
+    public ICollection<UserProgramProgress> ProgramProgresses { get; private set; }
+    = new List<UserProgramProgress>();
+
+public ICollection<UserVideoProgress> VideoProgresses { get; private set; }
+    = new List<UserVideoProgress>();
+
     // Navigation
     public AuthIdentity? AuthIdentity { get; private set; }
 

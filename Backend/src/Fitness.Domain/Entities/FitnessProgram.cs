@@ -19,6 +19,8 @@ public class FitnessProgram : AuditableEntity
     public ICollection<ProgramVideo> Videos { get; private set; }
         = new List<ProgramVideo>();
 
+public ICollection<UserProgramProgress> UserProgresses { get; private set; }
+    = new List<UserProgramProgress>();
     private FitnessProgram()
     {
     }

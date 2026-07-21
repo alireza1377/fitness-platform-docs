@@ -44,4 +44,34 @@ public class UserProgramProgressRepository
         await _context.SaveChangesAsync(
             cancellationToken);
     }
+
+    public Task UpdateAsync(
+    UserProgramProgress progress,
+    CancellationToken cancellationToken = default)
+{
+    _context.UserProgramProgresses.Update(progress);
+
+    return Task.CompletedTask;
+}
+
+public async Task<List<UserProgramProgress>> GetByUserAsync(
+    Guid userId,
+    CancellationToken cancellationToken = default)
+{
+    return await _context.UserProgramProgresses
+        .Where(x => x.UserId == userId)
+        .OrderByDescending(x => x.UpdatedAt)
+        .ToListAsync(cancellationToken);
+}
+
+public async Task<int> CountCompletedAsync(
+    Guid userId,
+    CancellationToken cancellationToken = default)
+{
+    return await _context.UserProgramProgresses
+        .CountAsync(
+            x => x.UserId == userId &&
+                 x.IsCompleted,
+            cancellationToken);
+}
 }

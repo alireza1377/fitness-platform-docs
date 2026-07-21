@@ -11,20 +11,24 @@ public class AuthService : IAuthService
     private readonly IUserRepository _userRepository;
     private readonly IAuthIdentityRepository _authIdentityRepository;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
-    private readonly IJwtService _jwtService;
+
+    private readonly IUserStatisticsRepository _userStatisticsRepository;
+        private readonly IJwtService _jwtService;
 
     public AuthService(
-        IOtpService otpService,
-        IUserRepository userRepository,
-        IAuthIdentityRepository authIdentityRepository,
-        IRefreshTokenRepository refreshTokenRepository,
-        IJwtService jwtService)
+    IOtpService otpService,
+    IUserRepository userRepository,
+    IAuthIdentityRepository authIdentityRepository,
+    IRefreshTokenRepository refreshTokenRepository,
+    IUserStatisticsRepository userStatisticsRepository,
+    IJwtService jwtService)
     {
         _otpService = otpService;
         _userRepository = userRepository;
         _authIdentityRepository = authIdentityRepository;
         _refreshTokenRepository = refreshTokenRepository;
         _jwtService = jwtService;
+        _userStatisticsRepository = userStatisticsRepository;
     }
 
 
@@ -87,6 +91,16 @@ public class AuthService : IAuthService
 
             await _authIdentityRepository.SaveChangesAsync(
                 cancellationToken);
+
+                var statistics = new UserStatistics(user.Id);
+
+await _userStatisticsRepository.AddAsync(
+    statistics,
+    cancellationToken);
+
+await _userStatisticsRepository.SaveChangesAsync(
+    cancellationToken);
+    
         }
         else
         {

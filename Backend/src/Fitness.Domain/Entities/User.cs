@@ -130,4 +130,6 @@ public ICollection<UserVideoProgress> VideoProgresses { get; private set; }
 
         SetUpdated();
     }
+    public ICollection<Notification> Notifications { get; private set; }
+    = new List<Notification>();
 }

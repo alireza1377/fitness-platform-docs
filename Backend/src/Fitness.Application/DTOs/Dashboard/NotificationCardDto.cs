@@ -1,3 +1,5 @@
+using Fitness.Domain.Enums;
+
 namespace Fitness.Application.DTOs.Dashboard;
 
 public class NotificationCardDto

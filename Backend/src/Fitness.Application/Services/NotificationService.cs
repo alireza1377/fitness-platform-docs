@@ -1,98 +1,126 @@
-using Fitness.Application.DTOs.Dashboard;
+using Fitness.Application.DTOs.Notification;
 using Fitness.Application.Interfaces;
+using Fitness.Domain.Entities;
+using Fitness.Domain.Enums;
 
 namespace Fitness.Application.Services;
 
 public class NotificationService : INotificationService
 {
-    private readonly IUserStatisticsRepository _statisticsRepository;
-    private readonly ISubscriptionRepository _subscriptionRepository;
-    private readonly IUserProgramProgressRepository _progressRepository;
+    private readonly INotificationRepository _repository;
 
     public NotificationService(
-        IUserStatisticsRepository statisticsRepository,
-        ISubscriptionRepository subscriptionRepository,
-        IUserProgramProgressRepository progressRepository)
+        INotificationRepository repository)
     {
-        _statisticsRepository = statisticsRepository;
-        _subscriptionRepository = subscriptionRepository;
-        _progressRepository = progressRepository;
+        _repository = repository;
     }
 
-    public async Task<List<NotificationCardDto>> BuildAsync(
+    public async Task<List<NotificationDto>> GetNotificationsAsync(
         Guid userId,
         CancellationToken cancellationToken = default)
     {
-        var notifications = new List<NotificationCardDto>();
-
-        //---------------------------------------------------
-        // Subscription
-        //---------------------------------------------------
-
-        var subscription =
-            await _subscriptionRepository.GetByUserAsync(
+        var notifications =
+            await _repository.GetByUserAsync(
                 userId,
                 cancellationToken);
 
-        if (subscription != null &&
-            subscription.IsActive() &&
-            subscription.RemainingDays() <= 7)
+        return notifications.Select(x => new NotificationDto
         {
-            notifications.Add(new NotificationCardDto
-            {
-                Title = "Subscription",
+            Id = x.Id,
+            Title = x.Title,
+            Message = x.Message,
+            Type = x.Type,
+            IsRead = x.IsRead,
+            CreatedAt = x.CreatedAt
+        }).ToList();
+    }
 
-                Message =
-                    $"Your subscription expires in {subscription.RemainingDays()} days.",
+    public Task<int> GetUnreadCountAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        return _repository.GetUnreadCountAsync(
+            userId,
+            cancellationToken);
+    }
 
-                Type = NotificationType.Subscription
-            });
-        }
+    public async Task MarkAsReadAsync(
+        Guid notificationId,
+        CancellationToken cancellationToken = default)
+    {
+        var notification =
+            await _repository.GetByIdAsync(
+                notificationId,
+                cancellationToken);
 
-        //---------------------------------------------------
-        // Workout
-        //---------------------------------------------------
+        if (notification is null)
+            return;
 
-        var statistics =
-            await _statisticsRepository.GetByUserAsync(
+        notification.MarkAsRead();
+
+        await _repository.UpdateAsync(
+            notification,
+            cancellationToken);
+
+        await _repository.SaveChangesAsync(
+            cancellationToken);
+    }
+
+    public async Task MarkAllAsReadAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        var notifications =
+            await _repository.GetByUserAsync(
                 userId,
                 cancellationToken);
 
-        if (statistics != null &&
-            statistics.LastWorkoutDate != DateOnly.FromDateTime(DateTime.UtcNow))
-        {
-            notifications.Add(new NotificationCardDto
-            {
-                Title = "Workout",
+        foreach (var item in notifications)
+            item.MarkAsRead();
 
-                Message = "You haven't completed today's workout.",
+        await _repository.SaveChangesAsync(
+            cancellationToken);
+    }
 
-                Type = NotificationType.Workout
-            });
-        }
-
-        //---------------------------------------------------
-        // Completed Program
-        //---------------------------------------------------
-
-        var completed =
-            await _progressRepository.CountCompletedAsync(
-                userId,
+    public async Task DeleteAsync(
+        Guid notificationId,
+        CancellationToken cancellationToken = default)
+    {
+        var notification =
+            await _repository.GetByIdAsync(
+                notificationId,
                 cancellationToken);
 
-        if (completed > 0)
-        {
-            notifications.Add(new NotificationCardDto
-            {
-                Title = "Great Job!",
+        if (notification is null)
+            return;
 
-                Message =
-                    $"You have completed {completed} program(s).",
+        await _repository.DeleteAsync(
+            notification,
+            cancellationToken);
 
-                Type = NotificationType.Success
-            });
-        }
+        await _repository.SaveChangesAsync(
+            cancellationToken);
+    }
 
-        return notifications;
+    public async Task CreateAsync(
+        Guid userId,
+        string title,
+        string message,
+        NotificationType type,
+        CancellationToken cancellationToken = default)
+    {
+        var notification =
+            new Notification(
+                userId,
+                title,
+                message,
+                type);
+
+        await _repository.AddAsync(
+            notification,
+            cancellationToken);
+
+        await _repository.SaveChangesAsync(
+            cancellationToken);
     }
 }

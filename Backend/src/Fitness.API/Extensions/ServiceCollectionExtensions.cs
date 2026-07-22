@@ -68,7 +68,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IProgressService, ProgressService>();
         services.AddScoped<IStatisticsService, StatisticsService>();
         services.AddScoped<IDashboardService, DashboardService>();
-
+        services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<INotificationService, NotificationService>();
 
         // ==========================
@@ -88,6 +88,10 @@ public static class ServiceCollectionExtensions
         // ==========================
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+
+        services.AddScoped<INotificationService, NotificationService>();
+
+        services.AddScoped<IPaymentRepository, PaymentRepository>();
 
         return services;
     }

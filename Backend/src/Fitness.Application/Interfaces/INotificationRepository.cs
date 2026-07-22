@@ -1,11 +1,10 @@
-using Fitness.Application.DTOs.Notification;
-using Fitness.Domain.Enums;
+using Fitness.Domain.Entities;
 
 namespace Fitness.Application.Interfaces;
 
-public interface INotificationService
+public interface INotificationRepository
 {
-    Task<List<NotificationDto>> GetNotificationsAsync(
+    Task<List<Notification>> GetByUserAsync(
         Guid userId,
         CancellationToken cancellationToken = default);
 
@@ -13,22 +12,22 @@ public interface INotificationService
         Guid userId,
         CancellationToken cancellationToken = default);
 
-    Task MarkAsReadAsync(
-        Guid notificationId,
+    Task<Notification?> GetByIdAsync(
+        Guid id,
         CancellationToken cancellationToken = default);
 
-    Task MarkAllAsReadAsync(
-        Guid userId,
+    Task AddAsync(
+        Notification notification,
+        CancellationToken cancellationToken = default);
+
+    Task UpdateAsync(
+        Notification notification,
         CancellationToken cancellationToken = default);
 
     Task DeleteAsync(
-        Guid notificationId,
+        Notification notification,
         CancellationToken cancellationToken = default);
 
-    Task CreateAsync(
-        Guid userId,
-        string title,
-        string message,
-        NotificationType type,
+    Task SaveChangesAsync(
         CancellationToken cancellationToken = default);
 }

@@ -16,6 +16,9 @@ public class FitnessDbContext : DbContext
 
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
+    public DbSet<Payment> Payments => Set<Payment>();
+    public DbSet<Notification> Notifications => Set<Notification>();
+
     public DbSet<Category> Categories => Set<Category>();
 
     public DbSet<FitnessProgram> FitnessPrograms => Set<FitnessProgram>();
@@ -25,10 +28,10 @@ public class FitnessDbContext : DbContext
     public DbSet<UserProgramProgress> UserProgramProgresses =>
         Set<UserProgramProgress>();
 
-public DbSet<UserStatistics> UserStatistics =>
+    public DbSet<UserStatistics> UserStatistics =>
     Set<UserStatistics>();
 
-public DbSet<Subscription> Subscriptions => Set<Subscription>();
+    public DbSet<Subscription> Subscriptions => Set<Subscription>();
     public DbSet<UserVideoProgress> UserVideoProgresses =>
         Set<UserVideoProgress>();
 
@@ -136,6 +139,8 @@ modelBuilder.Entity<UserStatistics>()
                 x.UserId,
                 x.FitnessProgramId
             })
+            
+
             
             .IsUnique();
     }

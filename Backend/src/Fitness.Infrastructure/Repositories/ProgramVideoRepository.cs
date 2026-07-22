@@ -76,4 +76,22 @@ public async Task<ProgramVideo?> GetWithProgramAsync(
             x => x.Id == videoId,
             cancellationToken);
 }
+public async Task<ProgramVideo?> GetNextVideoAsync(
+    Guid userId,
+    Guid programId,
+    CancellationToken cancellationToken = default)
+{
+    return await _context.ProgramVideos
+        .Include(x => x.Progresses)
+        .Where(x => x.FitnessProgramId == programId)
+        .OrderBy(x => x.Order)
+        .FirstOrDefaultAsync(
+            x =>
+                !x.Progresses.Any(p =>
+                    p.UserId == userId &&
+                    p.Completed),
+            cancellationToken);
+}
+
+
 }

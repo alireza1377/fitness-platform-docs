@@ -1,3 +1,4 @@
+using Fitness.Application.Dashboard.Builders;
 using Fitness.Application.Interfaces;
 using Fitness.Application.Services;
 using Fitness.Infrastructure.Configuration;
@@ -14,20 +15,27 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        // ==========================
+        // Database
+        // ==========================
         services.AddDbContext<FitnessDbContext>(options =>
         {
             options.UseNpgsql(
                 configuration.GetConnectionString("DefaultConnection"));
         });
 
+        // ==========================
         // Configuration
+        // ==========================
         services.Configure<JwtOptions>(
             configuration.GetSection(JwtOptions.SectionName));
 
         services.Configure<SmsOptions>(
             configuration.GetSection(SmsOptions.SectionName));
 
-        // HttpClient
+        // ==========================
+        // Http Clients
+        // ==========================
         services.AddHttpClient<ISmsService, SmsService>();
 
         // ==========================
@@ -40,20 +48,40 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IFitnessProgramRepository, FitnessProgramRepository>();
         services.AddScoped<IProgramVideoRepository, ProgramVideoRepository>();
+
         services.AddScoped<IUserVideoProgressRepository, UserVideoProgressRepository>();
+        services.AddScoped<IUserProgramProgressRepository, UserProgramProgressRepository>();
+        services.AddScoped<IUserStatisticsRepository, UserStatisticsRepository>();
+
+        services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
 
         // ==========================
         // Application Services
         // ==========================
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IOtpService, RedisOtpService>();
-        
 
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IProfileService, ProfileService>();
-
         services.AddScoped<IContentService, ContentService>();
         services.AddScoped<IVideoPlayerService, VideoPlayerService>();
+        services.AddScoped<IProgressService, ProgressService>();
+        services.AddScoped<IStatisticsService, StatisticsService>();
+        services.AddScoped<IDashboardService, DashboardService>();
+
+        services.AddScoped<INotificationService, NotificationService>();
+
+        // ==========================
+        // Dashboard Builders
+        // ==========================
+        services.AddScoped<UserCardBuilder>();
+        services.AddScoped<BmiBuilder>();
+        services.AddScoped<StatisticsBuilder>();
+        services.AddScoped<CurrentProgramBuilder>();
+        services.AddScoped<WorkoutBuilder>();
+        services.AddScoped<SubscriptionBuilder>();
+        services.AddScoped<NotificationBuilder>();
+        services.AddScoped<QuickActionBuilder>();
 
         // ==========================
         // Current User
@@ -61,19 +89,6 @@ public static class ServiceCollectionExtensions
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
 
-        services.AddScoped<
-        IUserProgramProgressRepository,
-        UserProgramProgressRepository>();
-        
-        services.AddScoped<IProgressService, ProgressService>();
-
-        services.AddScoped<IStatisticsService, StatisticsService>();
-
-        services.AddScoped<IDashboardService, DashboardService>();
-        
-        services.AddScoped<IUserStatisticsRepository, UserStatisticsRepository>();
-
-        services.AddScoped<IStatisticsService, StatisticsService>();
         return services;
     }
 }

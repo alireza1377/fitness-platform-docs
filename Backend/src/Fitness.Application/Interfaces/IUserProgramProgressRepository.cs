@@ -27,5 +27,9 @@ public interface IUserProgramProgressRepository
 Task<int> CountCompletedAsync(
     Guid userId,
     CancellationToken cancellationToken = default);
+
+    Task<UserProgramProgress?> GetCurrentProgramAsync(
+    Guid userId,
+    CancellationToken cancellationToken = default);
     
 }

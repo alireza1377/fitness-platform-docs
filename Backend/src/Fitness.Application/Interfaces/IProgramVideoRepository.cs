@@ -26,4 +26,9 @@ public interface IProgramVideoRepository
     Task<ProgramVideo?> GetWithProgramAsync(
     Guid videoId,
     CancellationToken cancellationToken = default);
+
+    Task<ProgramVideo?> GetNextVideoAsync(
+    Guid userId,
+    Guid programId,
+    CancellationToken cancellationToken = default);
 }

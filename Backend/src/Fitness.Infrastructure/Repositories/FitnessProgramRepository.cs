@@ -19,14 +19,15 @@ public class FitnessProgramRepository : IFitnessProgramRepository
     }
 
     public async Task<List<FitnessProgram>> GetByCategoryAsync(
-        Guid categoryId,
-        CancellationToken cancellationToken = default)
-    {
-        return await _context.FitnessPrograms
-            .Where(x => x.CategoryId == categoryId)
-            .OrderBy(x => x.Title)
-            .ToListAsync(cancellationToken);
-    }
+    Guid categoryId,
+    CancellationToken cancellationToken = default)
+{
+    return await _context.FitnessPrograms
+        .Where(x => x.CategoryId == categoryId)
+        .Include(x => x.Videos)
+        .OrderBy(x => x.Title)
+        .ToListAsync(cancellationToken);
+}
 
     public async Task<FitnessProgram?> GetByIdAsync(
         Guid id,

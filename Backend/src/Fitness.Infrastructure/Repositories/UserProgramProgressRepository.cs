@@ -15,7 +15,18 @@ public class UserProgramProgressRepository
     {
         _context = context;
     }
-
+public async Task<UserProgramProgress?> GetCurrentProgramAsync(
+    Guid userId,
+    CancellationToken cancellationToken = default)
+{
+    return await _context.UserProgramProgresses
+        .Include(x => x.FitnessProgram)
+        .Where(x =>
+            x.UserId == userId &&
+            !x.IsCompleted)
+        .OrderByDescending(x => x.UpdatedAt)
+        .FirstOrDefaultAsync(cancellationToken);
+}
     public async Task<UserProgramProgress?> GetAsync(
         Guid userId,
         Guid programId,
@@ -49,8 +60,6 @@ public class UserProgramProgressRepository
     UserProgramProgress progress,
     CancellationToken cancellationToken = default)
 {
-    _context.UserProgramProgresses.Update(progress);
-
     return Task.CompletedTask;
 }
 

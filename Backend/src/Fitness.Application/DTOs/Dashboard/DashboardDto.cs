@@ -12,6 +12,7 @@ public class DashboardDto
 
     public ContinueWatchingCardDto? ContinueWatching { get; set; }
 
+   
     // Phase 2
 
     public SubscriptionCardDto? Subscription { get; set; }
@@ -29,4 +30,5 @@ public class DashboardDto
     public StreakCardDto? Streak { get; set; }
 
     public AiCoachCardDto? AiCoach { get; set; }
+    public List<QuickActionDto> QuickActions { get; set; } = [];
 }

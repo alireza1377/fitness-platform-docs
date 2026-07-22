@@ -38,11 +38,14 @@ public class UserRepository : IUserRepository
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<User?> GetByIdAsync(
+  public async Task<User?> GetByIdAsync(
     Guid id,
     CancellationToken cancellationToken = default)
 {
     return await _context.Users
+        .Include(x => x.Statistics)
+        .Include(x => x.ProgramProgresses)
+        .Include(x => x.VideoProgresses)
         .FirstOrDefaultAsync(
             x => x.Id == id,
             cancellationToken);

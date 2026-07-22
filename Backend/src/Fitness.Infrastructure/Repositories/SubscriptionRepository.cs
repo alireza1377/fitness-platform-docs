@@ -5,39 +5,39 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Fitness.Infrastructure.Repositories;
 
-public class UserStatisticsRepository : IUserStatisticsRepository
+public class SubscriptionRepository : ISubscriptionRepository
 {
     private readonly FitnessDbContext _context;
 
-    public UserStatisticsRepository(FitnessDbContext context)
+    public SubscriptionRepository(FitnessDbContext context)
     {
         _context = context;
     }
 
-    public async Task<UserStatistics?> GetByUserAsync(
+    public async Task<Subscription?> GetByUserAsync(
         Guid userId,
         CancellationToken cancellationToken = default)
     {
-        return await _context.UserStatistics
+        return await _context.Subscriptions
             .FirstOrDefaultAsync(
                 x => x.UserId == userId,
                 cancellationToken);
     }
 
     public async Task AddAsync(
-        UserStatistics statistics,
+        Subscription subscription,
         CancellationToken cancellationToken = default)
     {
-        await _context.UserStatistics.AddAsync(
-            statistics,
+        await _context.Subscriptions.AddAsync(
+            subscription,
             cancellationToken);
     }
 
     public Task UpdateAsync(
-        UserStatistics statistics,
+        Subscription subscription,
         CancellationToken cancellationToken = default)
     {
-       
+        _context.Subscriptions.Update(subscription);
 
         return Task.CompletedTask;
     }

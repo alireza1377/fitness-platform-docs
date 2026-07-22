@@ -2,11 +2,20 @@ namespace Fitness.Application.DTOs.Dashboard;
 
 public class NotificationCardDto
 {
-    public Guid Id { get; set; }
-
     public string Title { get; set; } = string.Empty;
 
     public string Message { get; set; } = string.Empty;
 
-    public DateTime CreatedAt { get; set; }
+    public NotificationType Type { get; set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
+
+public enum NotificationType
+{
+    Info,
+    Success,
+    Warning,
+    Workout,
+    Subscription
 }

@@ -28,7 +28,7 @@ public class FitnessDbContext : DbContext
 public DbSet<UserStatistics> UserStatistics =>
     Set<UserStatistics>();
 
-
+public DbSet<Subscription> Subscriptions => Set<Subscription>();
     public DbSet<UserVideoProgress> UserVideoProgresses =>
         Set<UserVideoProgress>();
 
@@ -91,6 +91,24 @@ public DbSet<UserStatistics> UserStatistics =>
             .IsUnique();
 
 
+modelBuilder.Entity<UserProgramProgress>()
+    .HasOne(x => x.User)
+    .WithMany(x => x.ProgramProgresses)
+    .HasForeignKey(x => x.UserId);
+
+modelBuilder.Entity<UserProgramProgress>()
+    .HasOne(x => x.FitnessProgram)
+    .WithMany(x => x.UserProgresses)
+    .HasForeignKey(x => x.FitnessProgramId);
+
+modelBuilder.Entity<UserProgramProgress>()
+    .HasIndex(x => new
+    {
+        x.UserId,
+        x.FitnessProgramId
+    })
+    .IsUnique();
+
 modelBuilder.Entity<UserStatistics>()
     .HasOne(x => x.User)
     .WithOne(x => x.Statistics)
@@ -118,6 +136,7 @@ modelBuilder.Entity<UserStatistics>()
                 x.UserId,
                 x.FitnessProgramId
             })
+            
             .IsUnique();
     }
 }

@@ -79,10 +79,12 @@ private readonly IStatisticsService _statisticsService;
     }
 
     public async Task CompleteVideoAsync(
+        
         Guid userId,
         Guid videoId,
         CancellationToken cancellationToken = default)
     {
+       
         // پیدا کردن ویدئو
         var video = await _videoRepository.GetByIdAsync(
             videoId,
@@ -126,11 +128,7 @@ private readonly IStatisticsService _statisticsService;
             cancellationToken);
 
         // ذخیره تغییرات
-        await _videoProgressRepository.SaveChangesAsync(
-            cancellationToken);
-
-        await _programProgressRepository.SaveChangesAsync(
-            cancellationToken);
+        await _videoProgressRepository.SaveChangesAsync(cancellationToken);
 
             await _statisticsService.AddWorkoutAsync(
     userId,

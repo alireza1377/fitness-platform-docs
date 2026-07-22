@@ -35,6 +35,7 @@ public class User : AuditableEntity
 
 public UserStatistics? Statistics { get; private set; }
 
+public Subscription? Subscription { get; private set; }
     public ICollection<UserProgramProgress> ProgramProgresses { get; private set; }
     = new List<UserProgramProgress>();
 

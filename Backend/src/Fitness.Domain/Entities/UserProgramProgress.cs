@@ -7,6 +7,7 @@ public class UserProgramProgress : AuditableEntity
     public Guid UserId { get; private set; }
 
     public Guid FitnessProgramId { get; private set; }
+    public FitnessProgram FitnessProgram { get; private set; } = null!;
 
     public int CompletedVideos { get; private set; }
 
@@ -18,7 +19,7 @@ public class UserProgramProgress : AuditableEntity
 
     public User User { get; private set; } = null!;
 
-public FitnessProgram FitnessProgram { get; private set; } = null!;
+
 
     private UserProgramProgress()
     {

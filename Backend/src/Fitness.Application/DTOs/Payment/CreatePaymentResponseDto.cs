@@ -7,4 +7,7 @@ public class CreatePaymentResponseDto
     public decimal Amount { get; set; }
 
     public string Status { get; set; } = string.Empty;
+
+    public string? Authority { get; set; }
+    public string? PaymentUrl { get; set; }
 }

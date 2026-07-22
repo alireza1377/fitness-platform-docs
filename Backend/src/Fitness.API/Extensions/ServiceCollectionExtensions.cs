@@ -33,10 +33,15 @@ public static class ServiceCollectionExtensions
         services.Configure<SmsOptions>(
             configuration.GetSection(SmsOptions.SectionName));
 
+        services.Configure<ZarinPalOptions>(
+            configuration.GetSection(ZarinPalOptions.SectionName));
+
         // ==========================
         // Http Clients
         // ==========================
         services.AddHttpClient<ISmsService, SmsService>();
+
+        services.AddHttpClient();
 
         // ==========================
         // Repositories
@@ -54,6 +59,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserStatisticsRepository, UserStatisticsRepository>();
 
         services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<IPaymentRepository, PaymentRepository>();
 
         // ==========================
         // Application Services
@@ -68,7 +75,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IProgressService, ProgressService>();
         services.AddScoped<IStatisticsService, StatisticsService>();
         services.AddScoped<IDashboardService, DashboardService>();
-        services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<INotificationService, NotificationService>();
 
         // ==========================
@@ -89,9 +95,11 @@ public static class ServiceCollectionExtensions
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
 
-        services.AddScoped<INotificationService, NotificationService>();
-
-        services.AddScoped<IPaymentRepository, PaymentRepository>();
+        // ==========================
+        // Payment Gateway
+        // ==========================
+        // بعد از ساخت Gateway این خط را فعال می‌کنیم:
+        // services.AddScoped<IZarinPalGateway, ZarinPalGateway>();
 
         return services;
     }

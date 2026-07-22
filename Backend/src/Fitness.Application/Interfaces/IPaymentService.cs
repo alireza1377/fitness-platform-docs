@@ -8,4 +8,9 @@ public interface IPaymentService
         Guid userId,
         CreatePaymentRequestDto request,
         CancellationToken cancellationToken = default);
+
+        Task VerifyPaymentAsync(
+    Guid paymentId,
+    string authority,
+    CancellationToken cancellationToken = default);
 }

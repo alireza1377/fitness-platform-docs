@@ -4,9 +4,7 @@ namespace Fitness.Application.Interfaces;
 
 public interface IPaymentRepository
 {
-    Task<Payment?> GetByIdAsync(
-        Guid id,
-        CancellationToken cancellationToken = default);
+    
 
     Task<Payment?> GetByAuthorityAsync(
         string authority,
@@ -26,4 +24,8 @@ public interface IPaymentRepository
 
     Task SaveChangesAsync(
         CancellationToken cancellationToken = default);
+
+        Task<Payment?> GetByIdAsync(
+    Guid paymentId,
+    CancellationToken cancellationToken = default);
 }

@@ -43,6 +43,12 @@ public class Payment : AuditableEntity
         Status = PaymentStatus.Pending;
     }
 
+    public void SetAuthority(string authority)
+    {
+        Authority = authority;
+        SetUpdated();
+    }
+
     public void MarkSucceeded(
         string authority,
         string refId,
@@ -61,14 +67,12 @@ public class Payment : AuditableEntity
     public void MarkFailed()
     {
         Status = PaymentStatus.Failed;
-
         SetUpdated();
     }
 
     public void Cancel()
     {
         Status = PaymentStatus.Cancelled;
-
         SetUpdated();
     }
 }

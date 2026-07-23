@@ -2,34 +2,26 @@ using Fitness.Domain.Entities;
 
 namespace Fitness.Application.Interfaces;
 
-public interface IPaymentRepository
+public interface ISubscriptionPlanRepository
 {
-    
-
-    Task<Payment?> GetByAuthorityAsync(
-        string authority,
+    Task<SubscriptionPlan?> GetByIdAsync(
+        Guid id,
         CancellationToken cancellationToken = default);
 
-    Task<List<Payment>> GetByUserAsync(
-        Guid userId,
+    Task<List<SubscriptionPlan>> GetActiveAsync(
         CancellationToken cancellationToken = default);
 
     Task AddAsync(
-        Payment payment,
+        SubscriptionPlan plan,
         CancellationToken cancellationToken = default);
 
     Task UpdateAsync(
-        Payment payment,
+        SubscriptionPlan plan,
         CancellationToken cancellationToken = default);
 
     Task SaveChangesAsync(
         CancellationToken cancellationToken = default);
 
-        Task<Payment?> GetByIdAsync(
-    Guid paymentId,
-    CancellationToken cancellationToken = default);
-
-    Task<List<Payment>> GetUserPaymentsAsync(
-    Guid userId,
+        Task<List<SubscriptionPlan>> GetAllAsync(
     CancellationToken cancellationToken = default);
 }

@@ -13,4 +13,8 @@ public interface IPaymentService
     Guid paymentId,
     string authority,
     CancellationToken cancellationToken = default);
+
+    Task<List<PaymentHistoryItemDto>> GetHistoryAsync(
+    Guid userId,
+    CancellationToken cancellationToken = default);
 }

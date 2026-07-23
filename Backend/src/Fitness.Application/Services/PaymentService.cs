@@ -7,14 +7,20 @@ namespace Fitness.Application.Services;
 public class PaymentService : IPaymentService
 {
     private readonly IPaymentRepository _paymentRepository;
+    private readonly ISubscriptionPlanRepository _subscriptionPlanRepository;
     private readonly IZarinPalGateway _zarinPalGateway;
+    private readonly ISubscriptionActivationService _subscriptionActivationService;
 
     public PaymentService(
         IPaymentRepository paymentRepository,
-        IZarinPalGateway zarinPalGateway)
+        ISubscriptionPlanRepository subscriptionPlanRepository,
+        IZarinPalGateway zarinPalGateway,
+        ISubscriptionActivationService subscriptionActivationService)
     {
         _paymentRepository = paymentRepository;
+        _subscriptionPlanRepository = subscriptionPlanRepository;
         _zarinPalGateway = zarinPalGateway;
+        _subscriptionActivationService = subscriptionActivationService;
     }
 
     public async Task<CreatePaymentResponseDto> CreatePaymentAsync(
@@ -22,9 +28,21 @@ public class PaymentService : IPaymentService
         CreatePaymentRequestDto request,
         CancellationToken cancellationToken = default)
     {
+        var plan =
+            await _subscriptionPlanRepository.GetByIdAsync(
+                request.PlanId,
+                cancellationToken);
+
+        if (plan is null)
+            throw new Exception("Subscription plan not found.");
+
+        if (!plan.IsActive)
+            throw new Exception("Subscription plan is inactive.");
+
         var payment = new Payment(
             userId,
-            request.Amount,
+            plan.Id,
+            plan.Price,
             request.Gateway,
             request.Description);
 
@@ -114,5 +132,43 @@ public class PaymentService : IPaymentService
 
         await _paymentRepository.SaveChangesAsync(
             cancellationToken);
+
+        var plan =
+            await _subscriptionPlanRepository.GetByIdAsync(
+                payment.SubscriptionPlanId,
+                cancellationToken);
+
+        if (plan is null)
+            throw new Exception("Subscription plan not found.");
+
+        await _subscriptionActivationService.CreateSubscriptionAsync(
+            payment.UserId,
+            plan.Type,
+            payment.RefId ?? string.Empty,
+            cancellationToken);
+    }
+
+    public async Task<List<PaymentHistoryItemDto>> GetHistoryAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        var payments =
+            await _paymentRepository.GetUserPaymentsAsync(
+                userId,
+                cancellationToken);
+
+        return payments
+            .Select(x => new PaymentHistoryItemDto
+            {
+                PaymentId = x.Id,
+                Amount = x.Amount,
+                Gateway = x.Gateway.ToString(),
+                Status = x.Status.ToString(),
+                CreatedAt = x.CreatedAt,
+                PaidAt = x.PaidAt,
+                Description = x.Description,
+                TrackingCode = x.TrackingCode
+            })
+            .ToList();
     }
 }

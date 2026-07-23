@@ -1,6 +1,7 @@
 using Fitness.Domain.Entities;
 using Fitness.Infrastructure.Database.Context;
 using Microsoft.EntityFrameworkCore;
+using Fitness.Infrastructure.Database.Seed;
 
 namespace Fitness.Infrastructure.Database;
 
@@ -8,6 +9,8 @@ public static class DatabaseSeeder
 {
     public static async Task SeedAsync(FitnessDbContext context)
     {
+        await SubscriptionPlanSeeder.SeedAsync(context);
+
         await context.Database.MigrateAsync();
 
         if (await context.Categories.AnyAsync())

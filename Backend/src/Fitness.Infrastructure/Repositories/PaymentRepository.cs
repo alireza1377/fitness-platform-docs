@@ -68,4 +68,14 @@ public class PaymentRepository : IPaymentRepository
             x => x.Id == paymentId,
             cancellationToken);
 }
+public async Task<List<Payment>> GetUserPaymentsAsync(
+    Guid userId,
+    CancellationToken cancellationToken = default)
+{
+    return await _context.Payments
+        .Where(x => x.UserId == userId)
+        .OrderByDescending(x => x.CreatedAt)
+        .ToListAsync(cancellationToken);
+}
+
 }

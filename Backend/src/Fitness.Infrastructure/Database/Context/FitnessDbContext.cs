@@ -27,7 +27,7 @@ public class FitnessDbContext : DbContext
 
     public DbSet<UserProgramProgress> UserProgramProgresses =>
         Set<UserProgramProgress>();
-
+    public DbSet<SubscriptionPlan> SubscriptionPlans => Set<SubscriptionPlan>();
     public DbSet<UserStatistics> UserStatistics =>
     Set<UserStatistics>();
 

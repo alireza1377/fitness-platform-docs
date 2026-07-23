@@ -29,20 +29,22 @@ public class Payment : AuditableEntity
     {
     }
 
-    public Payment(
-        Guid userId,
-        decimal amount,
-        PaymentGateway gateway,
-        string description)
-    {
-        UserId = userId;
-        Amount = amount;
-        Gateway = gateway;
-        Description = description;
+   public Payment(
+    Guid userId,
+    Guid subscriptionPlanId,
+    decimal amount,
+    PaymentGateway gateway,
+    string description)
+{
+    UserId = userId;
+    SubscriptionPlanId = subscriptionPlanId;
 
-        Status = PaymentStatus.Pending;
-    }
+    Amount = amount;
+    Gateway = gateway;
+    Description = description;
 
+    Status = PaymentStatus.Pending;
+}
     public void SetAuthority(string authority)
     {
         Authority = authority;
@@ -75,4 +77,7 @@ public class Payment : AuditableEntity
         Status = PaymentStatus.Cancelled;
         SetUpdated();
     }
+    public Guid SubscriptionPlanId { get; private set; }
+
+    public SubscriptionPlan SubscriptionPlan { get; private set; } = null!;
 }

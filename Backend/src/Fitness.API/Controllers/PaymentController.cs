@@ -36,4 +36,35 @@ public class PaymentController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpPost("verify")]
+    public async Task<IActionResult> Verify(
+        [FromBody] VerifyPaymentRequestDto request,
+        CancellationToken cancellationToken)
+    {
+        await _paymentService.VerifyPaymentAsync(
+            request.PaymentId,
+            request.Authority,
+            cancellationToken);
+
+        return Ok(new
+        {
+            success = true,
+            message = "Payment verified successfully."
+        });
+    }
+    [HttpGet("history")]
+public async Task<IActionResult> History(
+    CancellationToken cancellationToken)
+{
+    if (_currentUser.UserId is null)
+        return Unauthorized();
+
+    var result =
+        await _paymentService.GetHistoryAsync(
+            _currentUser.UserId.Value,
+            cancellationToken);
+
+    return Ok(result);
+}
 }

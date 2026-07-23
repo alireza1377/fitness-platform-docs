@@ -61,6 +61,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IPaymentRepository, PaymentRepository>();
+        services.AddScoped<ISubscriptionActivationService, SubscriptionActivationService>();
 
         // ==========================
         // Application Services
@@ -100,7 +101,9 @@ public static class ServiceCollectionExtensions
         // ==========================
         // بعد از ساخت Gateway این خط را فعال می‌کنیم:
         // services.AddScoped<IZarinPalGateway, ZarinPalGateway>();
-
+        services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
+        services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
+        
         return services;
     }
 }

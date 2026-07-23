@@ -28,8 +28,8 @@ public class ContentService : IContentService
             .Select(x => new CategoryDto
             {
                 Id = x.Id,
-                Title = x.Title,
-                ThumbnailUrl = x.ThumbnailUrl,
+                Title = x.Name,
+                ThumbnailUrl = x.ImageUrl,
                 ProgramsCount = x.Programs.Count
             })
             .ToList();
@@ -69,15 +69,15 @@ public class ContentService : IContentService
             return null;
 
         return new FitnessProgramDetailsDto
-        {
-            Id = program.Id,
-            Title = program.Title,
-            Description = program.Description,
-            ThumbnailUrl = program.CoverImageUrl,
-            CategoryId = program.CategoryId,
-            CategoryTitle = program.Category.Title,
-            VideosCount = program.Videos.Count
-        };
+{
+    Id = program.Id,
+    Title = program.Title,
+    Description = program.Description,
+    ThumbnailUrl = program.CoverImageUrl,
+    CategoryId = program.CategoryId,
+    CategoryTitle = program.Category.Name,
+    VideosCount = program.Videos.Count
+};
     }
 
     public async Task<List<ProgramVideoDto>> GetVideosAsync(
@@ -90,14 +90,14 @@ public class ContentService : IContentService
                 cancellationToken);
 
         return videos
-            .Select(x => new ProgramVideoDto
-            {
-                Id = x.Id,
-                Title = x.Title,
-                VideoUrl = x.VideoUrl,
-                Duration = x.Duration,
-                Order = x.Order
-            })
-            .ToList();
+    .Select(x => new ProgramVideoDto
+    {
+        Id = x.Id,
+        Title = x.Title,
+        VideoUrl = x.VideoStorage.FileKey,
+        Duration = x.Duration,
+        Order = x.Order
+    })
+    .ToList();
     }
 }

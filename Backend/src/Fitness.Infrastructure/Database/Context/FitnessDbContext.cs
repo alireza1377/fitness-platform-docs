@@ -17,23 +17,31 @@ public class FitnessDbContext : DbContext
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     public DbSet<Payment> Payments => Set<Payment>();
+
     public DbSet<Notification> Notifications => Set<Notification>();
 
     public DbSet<Category> Categories => Set<Category>();
 
     public DbSet<FitnessProgram> FitnessPrograms => Set<FitnessProgram>();
 
+    public DbSet<VideoStorage> VideoStorages => Set<VideoStorage>();
+
     public DbSet<ProgramVideo> ProgramVideos => Set<ProgramVideo>();
 
-    public DbSet<UserProgramProgress> UserProgramProgresses =>
-        Set<UserProgramProgress>();
-    public DbSet<SubscriptionPlan> SubscriptionPlans => Set<SubscriptionPlan>();
-    public DbSet<UserStatistics> UserStatistics =>
-    Set<UserStatistics>();
+    public DbSet<UserProgramProgress> UserProgramProgresses
+        => Set<UserProgramProgress>();
 
-    public DbSet<Subscription> Subscriptions => Set<Subscription>();
-    public DbSet<UserVideoProgress> UserVideoProgresses =>
-        Set<UserVideoProgress>();
+    public DbSet<UserVideoProgress> UserVideoProgresses
+        => Set<UserVideoProgress>();
+
+    public DbSet<UserStatistics> UserStatistics
+        => Set<UserStatistics>();
+
+    public DbSet<SubscriptionPlan> SubscriptionPlans
+        => Set<SubscriptionPlan>();
+
+    public DbSet<Subscription> Subscriptions
+        => Set<Subscription>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -93,30 +101,6 @@ public class FitnessDbContext : DbContext
             })
             .IsUnique();
 
-
-modelBuilder.Entity<UserProgramProgress>()
-    .HasOne(x => x.User)
-    .WithMany(x => x.ProgramProgresses)
-    .HasForeignKey(x => x.UserId);
-
-modelBuilder.Entity<UserProgramProgress>()
-    .HasOne(x => x.FitnessProgram)
-    .WithMany(x => x.UserProgresses)
-    .HasForeignKey(x => x.FitnessProgramId);
-
-modelBuilder.Entity<UserProgramProgress>()
-    .HasIndex(x => new
-    {
-        x.UserId,
-        x.FitnessProgramId
-    })
-    .IsUnique();
-
-modelBuilder.Entity<UserStatistics>()
-    .HasOne(x => x.User)
-    .WithOne(x => x.Statistics)
-    .HasForeignKey<UserStatistics>(x => x.UserId)
-    .OnDelete(DeleteBehavior.Cascade);
         //----------------------------------------------------
         // User -> Program Progress
         //----------------------------------------------------
@@ -139,9 +123,16 @@ modelBuilder.Entity<UserStatistics>()
                 x.UserId,
                 x.FitnessProgramId
             })
-            
-
-            
             .IsUnique();
+
+        //----------------------------------------------------
+        // User Statistics
+        //----------------------------------------------------
+
+        modelBuilder.Entity<UserStatistics>()
+            .HasOne(x => x.User)
+            .WithOne(x => x.Statistics)
+            .HasForeignKey<UserStatistics>(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

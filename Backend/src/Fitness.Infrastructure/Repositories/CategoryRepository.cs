@@ -22,7 +22,7 @@ public class CategoryRepository : ICategoryRepository
         CancellationToken cancellationToken = default)
     {
         return await _context.Categories
-            .OrderBy(x => x.Title)
+            .OrderBy(x => x.Name)
             .ToListAsync(cancellationToken);
     }
 

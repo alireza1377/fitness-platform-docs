@@ -33,7 +33,7 @@ public class VideoPlayerService : IVideoPlayerService
         {
             Id = video.Id,
             Title = video.Title,
-            VideoUrl = video.VideoUrl,
+            VideoUrl = video.VideoStorage.FileKey,
             Duration = video.Duration,
             Order = video.Order
         };

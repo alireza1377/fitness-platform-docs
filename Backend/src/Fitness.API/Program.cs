@@ -9,6 +9,7 @@ using Fitness.Infrastructure.Database;
 using Fitness.Infrastructure.Database.Context;
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Database
 builder.Services.AddDatabase(builder.Configuration);
 

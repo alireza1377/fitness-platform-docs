@@ -4,43 +4,67 @@ namespace Fitness.Domain.Entities;
 
 public class Category : AuditableEntity
 {
-    public string Title { get; private set; } = string.Empty;
+    public string Name { get; private set; } = string.Empty;
 
-    public string? ThumbnailUrl { get; private set; }
+    public string Slug { get; private set; } = string.Empty;
 
     public string? Description { get; private set; }
 
-    public string? IconUrl { get; private set; }
+    public string? ImageUrl { get; private set; }
 
-    public ICollection<FitnessProgram> Programs { get; private set; }
-        = new List<FitnessProgram>();
+    public int DisplayOrder { get; private set; }
+
+    public bool IsPublished { get; private set; }
+
+   public ICollection<FitnessProgram> Programs { get; private set; }
+    = new List<FitnessProgram>();
 
     private Category()
     {
     }
 
     public Category(
-        string title,
-        string? thumbnailUrl = null,
-        string? description = null,
-        string? iconUrl = null)
+        string name,
+        string slug,
+        string? description,
+        string? imageUrl,
+        int displayOrder)
     {
-        Title = title;
-        ThumbnailUrl = thumbnailUrl;
+        Name = name;
+        Slug = slug;
         Description = description;
-        IconUrl = iconUrl;
+        ImageUrl = imageUrl;
+        DisplayOrder = displayOrder;
+
+        IsPublished = true;
     }
 
     public void Update(
-        string title,
-        string? thumbnailUrl,
+        string name,
+        string slug,
         string? description,
-        string? iconUrl)
+        string? imageUrl,
+        int displayOrder)
     {
-        Title = title;
-        ThumbnailUrl = thumbnailUrl;
+        Name = name;
+        Slug = slug;
         Description = description;
-        IconUrl = iconUrl;
+        ImageUrl = imageUrl;
+        DisplayOrder = displayOrder;
+
+        SetUpdated();
+    }
+
+    public void Publish()
+    {
+        IsPublished = true;
+
+        SetUpdated();
+    }
+
+    public void UnPublish()
+    {
+        IsPublished = false;
 
         SetUpdated();
     }

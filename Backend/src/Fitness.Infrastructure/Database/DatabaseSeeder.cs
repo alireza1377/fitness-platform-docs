@@ -1,7 +1,8 @@
 using Fitness.Domain.Entities;
+using Fitness.Domain.Enums;
 using Fitness.Infrastructure.Database.Context;
-using Microsoft.EntityFrameworkCore;
 using Fitness.Infrastructure.Database.Seed;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fitness.Infrastructure.Database;
 
@@ -9,9 +10,9 @@ public static class DatabaseSeeder
 {
     public static async Task SeedAsync(FitnessDbContext context)
     {
-        await SubscriptionPlanSeeder.SeedAsync(context);
-
         await context.Database.MigrateAsync();
+
+        await SubscriptionPlanSeeder.SeedAsync(context);
 
         if (await context.Categories.AnyAsync())
             return;
@@ -22,21 +23,37 @@ public static class DatabaseSeeder
 
         var home = new Category(
             "ورزش در خانه",
-            "تمرینات بدون تجهیزات");
+            "تمرینات بدون تجهیزات",
+            "/images/categories/home.jpg",
+            null,
+            1);
 
         var dumbbell = new Category(
             "ورزش با دمبل",
-            "تمرینات قدرتی");
+            "تمرینات قدرتی",
+            "/images/categories/dumbbell.jpg",
+            null,
+            2);
 
         var zumba = new Category(
             "زومبا",
-            "رقص و هوازی");
+            "رقص و هوازی",
+            "/images/categories/zumba.jpg",
+            null,
+            3);
 
         var yoga = new Category(
             "یوگا",
-            "آرامش و انعطاف");
+            "آرامش و انعطاف",
+            "/images/categories/yoga.jpg",
+            null,
+            4);
 
-        context.Categories.AddRange(home, dumbbell, zumba, yoga);
+        context.Categories.AddRange(
+            home,
+            dumbbell,
+            zumba,
+            yoga);
 
         await context.SaveChangesAsync();
 
@@ -47,22 +64,26 @@ public static class DatabaseSeeder
         var homeProgram = new FitnessProgram(
             home.Id,
             "برنامه ورزش در خانه",
-            "۲۰ جلسه تمرینی");
+            "۲۰ جلسه تمرینی",
+            "/images/programs/home.jpg");
 
         var dumbbellProgram = new FitnessProgram(
             dumbbell.Id,
             "برنامه دمبل",
-            "۱۱ جلسه");
+            "۱۱ جلسه",
+            "/images/programs/dumbbell.jpg");
 
         var zumbaProgram = new FitnessProgram(
             zumba.Id,
             "زومبا مقدماتی",
-            "۱۰ جلسه");
+            "۱۰ جلسه",
+            "/images/programs/zumba.jpg");
 
         var yogaProgram = new FitnessProgram(
             yoga.Id,
             "یوگا مقدماتی",
-            "۱۵ جلسه");
+            "۱۵ جلسه",
+            "/images/programs/yoga.jpg");
 
         context.FitnessPrograms.AddRange(
             homeProgram,
@@ -100,11 +121,21 @@ public static class DatabaseSeeder
         {
             context.ProgramVideos.Add(
                 new ProgramVideo(
-                    program.Id,
-                    i,
-                    $"جلسه {i}",
-                    $"https://cdn.test/{folder}/{i}.mp4",
-                    TimeSpan.FromMinutes(durationMinutes)));
+    fitnessProgramId: program.Id,
+    order: i,
+    title: $"جلسه {i}",
+    videoStorageId: Guid.NewGuid(), // فعلاً موقت
+    description: $"ویدئوی شماره {i}",
+    downloadUrl: null,
+    duration: TimeSpan.FromMinutes(durationMinutes),
+    thumbnailUrl: $"https://cdn.test/{folder}/{i}.jpg",
+    difficulty: VideoDifficulty.Beginner,
+    estimatedCalories: durationMinutes * 5,
+    isFree: i == 1,
+    isPublished: true,
+    hasSubtitle: true,
+    hasMultiAudio: true)
+                    );
         }
     }
 }

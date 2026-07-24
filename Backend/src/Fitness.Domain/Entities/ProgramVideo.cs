@@ -111,4 +111,10 @@ public class ProgramVideo : AuditableEntity
 
         SetUpdated();
     }
+
+    public void SetOrder(int order)
+{
+    Order = order;
+    SetUpdated();
+}
 }

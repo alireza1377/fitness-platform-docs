@@ -31,4 +31,19 @@ public interface IProgramVideoRepository
     Guid userId,
     Guid programId,
     CancellationToken cancellationToken = default);
+
+    Task AddAsync(
+    ProgramVideo video,
+    CancellationToken cancellationToken = default);
+
+void Remove(
+    ProgramVideo video);
+
+Task SaveChangesAsync(
+    CancellationToken cancellationToken = default);
+
+    Task ReorderAsync(
+    Guid programId,
+    IReadOnlyList<Guid> videoIds,
+    CancellationToken cancellationToken = default);
 }

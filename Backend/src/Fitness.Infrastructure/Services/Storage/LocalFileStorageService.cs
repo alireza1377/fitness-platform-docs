@@ -8,25 +8,15 @@ namespace Fitness.Infrastructure.Services.Storage;
 public class LocalFileStorageService : IFileStorageService
 {
     private readonly string _rootPath;
-    private readonly IVideoStorageRepository _repository;
-private readonly IVideoMetadataService _videoMetadataService;
-private readonly IThumbnailGenerator _thumbnailGenerator;
-    
-    public LocalFileStorageService(
-    IVideoStorageRepository repository,
-    IVideoMetadataService videoMetadataService,
-    IThumbnailGenerator thumbnailGenerator)
-{
-    _repository = repository;
-    _videoMetadataService = videoMetadataService;
-    _thumbnailGenerator = thumbnailGenerator;
 
-    _rootPath = Path.Combine(
-        Directory.GetCurrentDirectory(),
-        "storage");
+    public LocalFileStorageService()
+    {
+        _rootPath = Path.Combine(
+            Directory.GetCurrentDirectory(),
+            "storage");
 
-    Directory.CreateDirectory(_rootPath);
-}
+        Directory.CreateDirectory(_rootPath);
+    }
 
     public async Task<VideoStorage> UploadAsync(
         Stream stream,
@@ -34,80 +24,104 @@ private readonly IThumbnailGenerator _thumbnailGenerator;
         string contentType,
         CancellationToken cancellationToken = default)
     {
-        var id = Guid.NewGuid();
-
         var extension = Path.GetExtension(fileName);
 
-        var key = $"{id}{extension}";
+        var generatedName = $"{Guid.NewGuid()}{extension}";
 
-        var path = Path.Combine(_rootPath, key);
+        var fullPath = Path.Combine(
+            _rootPath,
+            generatedName);
 
-        using (var file = File.Create(path))
+        await using (var fileStream = File.Create(fullPath))
         {
-            await stream.CopyToAsync(file, cancellationToken);
+            await stream.CopyToAsync(
+                fileStream,
+                cancellationToken);
         }
 
-        var hash = await CalculateHashAsync(path);
+        var checksum = await CalculateHashAsync(fullPath);
 
-        var info = new FileInfo(path);
+        var fileInfo = new FileInfo(fullPath);
 
-var metadata = await _videoMetadataService.ExtractAsync(
-    path,
-    cancellationToken);
-    var thumbnailPath = await _thumbnailGenerator.GenerateAsync(
-    path,
-    cancellationToken);
         var storage = new VideoStorage(
             storageProvider: StorageProvider.LocalStorage,
             bucket: "local",
             region: "localhost",
-            fileKey: key,
+            fileKey: generatedName,
             originalFileName: fileName,
             contentType: contentType,
-            fileSize: info.Length,
-            checksum: hash,
-            durationSeconds: metadata.DurationSeconds,
-            width: metadata.Width,
-            height: metadata.Height,
-            bitrate: metadata.Bitrate,
-            thumbnailUrl: thumbnailPath,
+            fileSize: fileInfo.Length,
+            checksum: checksum,
+            durationSeconds: 0,
+            width: 0,
+            height: 0,
+            bitrate: 0,
+            thumbnailUrl: null,
             cdnUrl: null);
 
         storage.MarkReady();
 
-       
-
         return storage;
     }
+
+   public async Task<string> UploadThumbnailAsync(
+    string videoFileKey,
+    Stream stream,
+    string fileName,
+    CancellationToken cancellationToken = default)
+{
+    var thumbnailsFolder = Path.Combine(
+        Directory.GetCurrentDirectory(),
+        "storage",
+        "thumbnails");
+
+    Directory.CreateDirectory(thumbnailsFolder);
+
+    var extension = Path.GetExtension(fileName);
+
+    // اسم Thumbnail دقیقاً از اسم ویدئو گرفته می‌شود
+    var generatedName =
+        $"{Path.GetFileNameWithoutExtension(videoFileKey)}{extension}";
+
+    var fullPath = Path.Combine(
+        thumbnailsFolder,
+        generatedName);
+
+    await using var fileStream = File.Create(fullPath);
+
+    await stream.CopyToAsync(
+        fileStream,
+        cancellationToken);
+
+    return generatedName;
+}
 
     public Task DeleteAsync(
         Guid storageId,
         CancellationToken cancellationToken = default)
     {
-        return Task.CompletedTask;
+        throw new NotImplementedException();
     }
 
     public Task<string> GetStreamingUrlAsync(
         Guid storageId,
         CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(
-            $"/api/videos/{storageId}/stream");
+        throw new NotImplementedException();
     }
 
     public Task<string?> GetDownloadUrlAsync(
         Guid storageId,
         CancellationToken cancellationToken = default)
     {
-        return Task.FromResult<string?>(
-            $"/api/videos/{storageId}/download");
+        throw new NotImplementedException();
     }
 
     public Task<bool> ExistsAsync(
         Guid storageId,
         CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(true);
+        throw new NotImplementedException();
     }
 
     private static async Task<string> CalculateHashAsync(string path)
@@ -120,4 +134,34 @@ var metadata = await _videoMetadataService.ExtractAsync(
 
         return Convert.ToHexString(hash);
     }
+
+    public async Task<string> UploadProgramCoverAsync(
+    Stream stream,
+    string fileName,
+    CancellationToken cancellationToken = default)
+{
+    var coversFolder = Path.Combine(
+        Directory.GetCurrentDirectory(),
+        "storage",
+        "covers");
+
+    Directory.CreateDirectory(coversFolder);
+
+    var extension = Path.GetExtension(fileName);
+
+    var fileKey = $"{Guid.NewGuid()}{extension}";
+
+    var fullPath = Path.Combine(
+        coversFolder,
+        fileKey);
+
+    await using var fileStream = File.Create(fullPath);
+
+    await stream.CopyToAsync(
+        fileStream,
+        cancellationToken);
+
+    return Path.Combine("covers", fileKey)
+        .Replace("\\", "/");
+}
 }

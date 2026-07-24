@@ -25,4 +25,15 @@ public interface IFileStorageService
     Task<bool> ExistsAsync(
         Guid storageId,
         CancellationToken cancellationToken = default);
+        
+        Task<string> UploadThumbnailAsync(
+    string videoFileKey,
+    Stream stream,
+    string fileName,
+    CancellationToken cancellationToken = default);
+
+    Task<string> UploadProgramCoverAsync(
+    Stream stream,
+    string fileName,
+    CancellationToken cancellationToken = default);
 }

@@ -1,7 +1,3 @@
-// =========================
-// CategoryRepository.cs
-// =========================
-
 using Fitness.Application.Interfaces;
 using Fitness.Domain.Entities;
 using Fitness.Infrastructure.Database.Context;
@@ -18,11 +14,20 @@ public class CategoryRepository : ICategoryRepository
         _context = context;
     }
 
+    public async Task AddAsync(
+        Category category,
+        CancellationToken cancellationToken = default)
+    {
+        await _context.Categories.AddAsync(
+            category,
+            cancellationToken);
+    }
+
     public async Task<List<Category>> GetAllAsync(
         CancellationToken cancellationToken = default)
     {
         return await _context.Categories
-            .OrderBy(x => x.Name)
+            .OrderBy(x => x.DisplayOrder)
             .ToListAsync(cancellationToken);
     }
 
@@ -34,5 +39,16 @@ public class CategoryRepository : ICategoryRepository
             .FirstOrDefaultAsync(
                 x => x.Id == id,
                 cancellationToken);
+    }
+
+    public void Remove(Category category)
+    {
+        _context.Categories.Remove(category);
+    }
+
+    public async Task SaveChangesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

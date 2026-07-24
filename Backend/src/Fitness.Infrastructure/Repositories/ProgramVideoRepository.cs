@@ -95,4 +95,45 @@ public class ProgramVideoRepository : IProgramVideoRepository
                         p.Completed),
                 cancellationToken);
     }
+
+    public async Task AddAsync(
+    ProgramVideo video,
+    CancellationToken cancellationToken = default)
+{
+    await _context.ProgramVideos.AddAsync(
+        video,
+        cancellationToken);
+}
+
+public void Remove(
+    ProgramVideo video)
+{
+    _context.ProgramVideos.Remove(video);
+}
+
+public async Task SaveChangesAsync(
+    CancellationToken cancellationToken = default)
+{
+    await _context.SaveChangesAsync(cancellationToken);
+}
+
+public async Task ReorderAsync(
+    Guid programId,
+    IReadOnlyList<Guid> videoIds,
+    CancellationToken cancellationToken = default)
+{
+    var videos = await _context.ProgramVideos
+        .Where(x => x.FitnessProgramId == programId)
+        .ToListAsync(cancellationToken);
+
+    for (var i = 0; i < videoIds.Count; i++)
+    {
+        var video = videos.FirstOrDefault(x => x.Id == videoIds[i]);
+
+        if (video != null)
+        {
+            video.SetOrder(i + 1);
+        }
+    }
+}
 }

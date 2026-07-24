@@ -113,7 +113,7 @@ services.AddScoped<IVideoUploadService, VideoUploadService>();
 services.AddScoped<IVideoStorageService, VideoStorageService>();
 services.AddScoped<IVideoMetadataService, VideoMetadataService>();
 services.AddScoped<IThumbnailGenerator, ThumbnailGenerator>();
-
+services.AddScoped<IProgramVideoService, ProgramVideoService>();
         return services;
     }
 }

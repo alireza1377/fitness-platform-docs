@@ -4,6 +4,13 @@ namespace Fitness.Application.Interfaces;
 
 public interface IFitnessProgramRepository
 {
+    Task AddAsync(
+        FitnessProgram program,
+        CancellationToken cancellationToken = default);
+
+    Task<List<FitnessProgram>> GetAllAsync(
+        CancellationToken cancellationToken = default);
+
     Task<List<FitnessProgram>> GetByCategoryAsync(
         Guid categoryId,
         CancellationToken cancellationToken = default);
@@ -12,6 +19,13 @@ public interface IFitnessProgramRepository
         Guid id,
         CancellationToken cancellationToken = default);
 
-        Task<List<FitnessProgram>> GetAllAsync(
+    void Remove(FitnessProgram program);
+
+    Task SaveChangesAsync(
+        CancellationToken cancellationToken = default);
+
+        Task ReorderAsync(
+    Guid categoryId,
+    IReadOnlyList<Guid> programIds,
     CancellationToken cancellationToken = default);
 }

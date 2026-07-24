@@ -15,6 +15,7 @@ public class FitnessProgram : AuditableEntity
     public int TotalVideos { get; private set; }
 
     public Category Category { get; private set; } = null!;
+    public int DisplayOrder { get; private set; }
 
     public ICollection<ProgramVideo> Videos { get; private set; }
         = new List<ProgramVideo>();
@@ -55,4 +56,9 @@ public ICollection<UserProgramProgress> UserProgresses { get; private set; }
 
         SetUpdated();
     }
+    public void SetDisplayOrder(int order)
+{
+    DisplayOrder = 0;
+    SetUpdated();
+}
 }

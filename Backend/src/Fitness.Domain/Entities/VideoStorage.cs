@@ -125,4 +125,9 @@ public class VideoStorage : AuditableEntity
 
         SetUpdated();
     }
+    public void SetThumbnail(string thumbnailUrl)
+{
+    ThumbnailUrl = thumbnailUrl;
+    SetUpdated();
+}
 }

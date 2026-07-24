@@ -6,13 +6,19 @@ public class VideoStorageService : IVideoStorageService
 {
     private readonly IFileStorageService _fileStorageService;
     private readonly IVideoStorageRepository _videoStorageRepository;
+    private readonly IVideoMetadataService _videoMetadataService;
+   private readonly IThumbnailGenerator _thumbnailGenerator;
 
     public VideoStorageService(
         IFileStorageService fileStorageService,
-        IVideoStorageRepository videoStorageRepository)
+        IVideoStorageRepository videoStorageRepository,
+         IVideoMetadataService videoMetadataService,
+          IThumbnailGenerator thumbnailGenerator)
     {
         _fileStorageService = fileStorageService;
         _videoStorageRepository = videoStorageRepository;
+         _videoMetadataService = videoMetadataService;
+          _thumbnailGenerator = thumbnailGenerator;
     }
 
    public async Task<Guid> UploadAsync(
@@ -28,7 +34,28 @@ public class VideoStorageService : IVideoStorageService
         fileName,
         contentType,
         cancellationToken);
+        var filePath = Path.Combine(
+    Directory.GetCurrentDirectory(),
+    "storage",
+    storage.FileKey);
 
+var metadata = await _videoMetadataService.ExtractAsync(
+    filePath,
+    cancellationToken);
+
+storage.UpdateMetadata(
+    metadata.DurationSeconds,
+    metadata.Width,
+    metadata.Height,
+    metadata.Bitrate,
+    storage.Checksum);
+    
+    var thumbnailPath = await _thumbnailGenerator.GenerateAsync(
+    filePath,
+    cancellationToken);
+
+    storage.SetThumbnail(thumbnailPath);
+    
     // در مراحل بعد اگر thumbnailStream وجود داشت
     // اینجا آن را نیز ذخیره خواهیم کرد.
 

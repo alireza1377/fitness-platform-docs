@@ -1,7 +1,8 @@
+using Fitness.API.DTOs.Videos;
 using Fitness.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Fitness.Application.DTOs.Videos;
+
 namespace Fitness.API.Controllers.Admin;
 
 [ApiController]
@@ -18,22 +19,32 @@ public class VideoStorageController : ControllerBase
     }
 
     [HttpPost("upload")]
-[RequestSizeLimit(5_000_000_000)]
-public async Task<IActionResult> Upload(
-    [FromForm] UploadVideoRequest request,
-    CancellationToken cancellationToken)
-{
-    if (request.Video is null || request.Video.Length == 0)
-        return BadRequest("Video is required.");
-
-    var storageId = await _videoStorageService.UploadAsync(
-        request.Video,
-        cancellationToken);
-
-    return Ok(new
+    [RequestSizeLimit(5_000_000_000)]
+    public async Task<IActionResult> Upload(
+        [FromForm] UploadVideoRequest request,
+        CancellationToken cancellationToken)
     {
-        storageId,
-        hasCustomThumbnail = request.Thumbnail != null
-    });
-}
+        if (request.Video == null || request.Video.Length == 0)
+            return BadRequest("Video is required.");
+
+        await using var videoStream = request.Video.OpenReadStream();
+
+        Stream? thumbnailStream = null;
+
+        if (request.Thumbnail != null)
+            thumbnailStream = request.Thumbnail.OpenReadStream();
+
+        var storageId = await _videoStorageService.UploadAsync(
+            videoStream,
+            request.Video.FileName,
+            request.Video.ContentType,
+            thumbnailStream,
+            request.Thumbnail?.FileName,
+            cancellationToken);
+
+        return Ok(new
+        {
+            storageId
+        });
+    }
 }

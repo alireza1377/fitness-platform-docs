@@ -43,6 +43,30 @@ services:
     volumes:
       - redis_data:/data
 
+  api:
+    container_name: fitness-api
+
+    build:
+      context: .
+      dockerfile: Backend/src/Fitness.API/Dockerfile
+
+    restart: unless-stopped
+
+    ports:
+      - "5000:8080"
+
+    depends_on:
+      - postgres
+      - redis
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=fitness;Username=fitness;Password=123456
+
+      Redis__ConnectionString: redis:6379
 volumes:
   postgres_data:
   redis_data:
+
+  

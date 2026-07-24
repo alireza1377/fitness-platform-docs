@@ -7,6 +7,8 @@ using Fitness.Infrastructure.Repositories;
 using Fitness.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Fitness.Infrastructure.Services.Storage;
+using Fitness.Infrastructure.Services.Video;
+
 namespace Fitness.API.Extensions;
 
 public static class ServiceCollectionExtensions
@@ -109,6 +111,9 @@ public static class ServiceCollectionExtensions
 services.AddScoped<IFileStorageService, LocalFileStorageService>();
 services.AddScoped<IVideoUploadService, VideoUploadService>();
 services.AddScoped<IVideoStorageService, VideoStorageService>();
+services.AddScoped<IVideoMetadataService, VideoMetadataService>();
+services.AddScoped<IThumbnailGenerator, ThumbnailGenerator>();
+
         return services;
     }
 }

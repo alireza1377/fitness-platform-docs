@@ -7,9 +7,12 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Fitness.Infrastructure.Database;
 using Fitness.Infrastructure.Database.Context;
+using Fitness.Infrastructure.Configuration;
+using Microsoft.Extensions.Options;
 var builder = WebApplication.CreateBuilder(args);
 
-
+builder.Services.Configure<FFmpegOptions>(
+    builder.Configuration.GetSection(FFmpegOptions.SectionName));
 // Database
 builder.Services.AddDatabase(builder.Configuration);
 

@@ -7,7 +7,7 @@ namespace Fitness.API.Controllers.Admin;
 
 [ApiController]
 [Route("api/admin/videos")]
-[Authorize(Roles = "Admin")]
+//[Authorize(Roles = "Admin")]
 public class VideoStorageController : ControllerBase
 {
     private readonly IVideoStorageService _videoStorageService;

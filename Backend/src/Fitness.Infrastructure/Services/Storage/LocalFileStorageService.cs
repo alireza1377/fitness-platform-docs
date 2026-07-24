@@ -9,18 +9,24 @@ public class LocalFileStorageService : IFileStorageService
 {
     private readonly string _rootPath;
     private readonly IVideoStorageRepository _repository;
-
+private readonly IVideoMetadataService _videoMetadataService;
+private readonly IThumbnailGenerator _thumbnailGenerator;
+    
     public LocalFileStorageService(
-        IVideoStorageRepository repository)
-    {
-        _repository = repository;
+    IVideoStorageRepository repository,
+    IVideoMetadataService videoMetadataService,
+    IThumbnailGenerator thumbnailGenerator)
+{
+    _repository = repository;
+    _videoMetadataService = videoMetadataService;
+    _thumbnailGenerator = thumbnailGenerator;
 
-        _rootPath = Path.Combine(
-            Directory.GetCurrentDirectory(),
-            "storage");
+    _rootPath = Path.Combine(
+        Directory.GetCurrentDirectory(),
+        "storage");
 
-        Directory.CreateDirectory(_rootPath);
-    }
+    Directory.CreateDirectory(_rootPath);
+}
 
     public async Task<VideoStorage> UploadAsync(
         Stream stream,
@@ -45,6 +51,12 @@ public class LocalFileStorageService : IFileStorageService
 
         var info = new FileInfo(path);
 
+var metadata = await _videoMetadataService.ExtractAsync(
+    path,
+    cancellationToken);
+    var thumbnailPath = await _thumbnailGenerator.GenerateAsync(
+    path,
+    cancellationToken);
         var storage = new VideoStorage(
             storageProvider: StorageProvider.LocalStorage,
             bucket: "local",
@@ -54,17 +66,16 @@ public class LocalFileStorageService : IFileStorageService
             contentType: contentType,
             fileSize: info.Length,
             checksum: hash,
-            durationSeconds: 0,
-            width: 0,
-            height: 0,
-            bitrate: 0,
-            thumbnailUrl: null,
+            durationSeconds: metadata.DurationSeconds,
+            width: metadata.Width,
+            height: metadata.Height,
+            bitrate: metadata.Bitrate,
+            thumbnailUrl: thumbnailPath,
             cdnUrl: null);
 
         storage.MarkReady();
 
-        await _repository.AddAsync(storage, cancellationToken);
-        await _repository.SaveChangesAsync(cancellationToken);
+       
 
         return storage;
     }

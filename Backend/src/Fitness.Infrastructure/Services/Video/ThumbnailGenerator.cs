@@ -1,10 +1,17 @@
 using System.Diagnostics;
 using Fitness.Application.Interfaces;
-
+using Fitness.Infrastructure.Configuration;
+using Microsoft.Extensions.Options;
 namespace Fitness.Infrastructure.Services.Video;
 
 public class ThumbnailGenerator : IThumbnailGenerator
 {
+    private readonly FFmpegOptions _options;
+    public ThumbnailGenerator(
+    IOptions<FFmpegOptions> options)
+{
+    _options = options.Value;
+}
     public async Task<string> GenerateAsync(
         string videoPath,
         CancellationToken cancellationToken = default)
@@ -24,7 +31,7 @@ public class ThumbnailGenerator : IThumbnailGenerator
 
         var process = new Process();
 
-        process.StartInfo.FileName = "ffmpeg";
+        process.StartInfo.FileName = _options.FFmpegPath;
 
         process.StartInfo.Arguments =
             $"-y -i \"{videoPath}\" -ss 00:00:01 -vframes 1 \"{thumbnailPath}\"";
@@ -32,7 +39,7 @@ public class ThumbnailGenerator : IThumbnailGenerator
         process.StartInfo.RedirectStandardError = true;
         process.StartInfo.UseShellExecute = false;
         process.StartInfo.CreateNoWindow = true;
-
+        process.StartInfo.RedirectStandardOutput = true;
         process.Start();
 
         await process.WaitForExitAsync(cancellationToken);
